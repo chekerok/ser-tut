@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Сёр Тут</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-<script src="https://api-maps.yandex.ru/v3/?apikey=e2cf8129-ff43-4729-b542-1591d12b5fef&lang=ru_RU" type="text/javascript"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Russo+One&family=Inter:wght@400;600&display=swap');
 
@@ -111,10 +112,18 @@
     background: #16213e;
   }
 
-  .popup-inner { display: flex; flex-direction: column; gap: 6px; padding: 4px; }
+  .leaflet-popup-content-wrapper {
+    background: #16213e;
+    border: 2px solid #f5c542;
+    border-radius: 12px;
+    color: #fff;
+  }
+  .leaflet-popup-tip { background: #f5c542; }
+  .leaflet-popup-content { margin: 10px 14px; }
+  .popup-inner { display: flex; flex-direction: column; gap: 6px; }
   .popup-title { font-family: 'Russo One', sans-serif; font-size: 15px; color: #f5c542; }
-  .popup-user { font-size: 13px; color: #333; }
-  .popup-time { font-size: 11px; color: #888; }
+  .popup-user { font-size: 13px; color: #ccc; }
+  .popup-time { font-size: 11px; color: #666; }
   .marker-label {
     position: absolute;
     bottom: 34px;
@@ -169,7 +178,7 @@
 // ============================================================
 // КОНФИГ — только токен бота, никаких внешних API ключей!
 // ============================================================
-const BOT_TOKEN = '8546740522:AAGknL1xglNM-RrMWeEoUKoIrATbuI4Z9vM';
+const BOT_TOKEN = 'ВСТАВЬ_ТОКЕН_СЮДА';
 const CHANNEL_ID = '-1003921076438';
 // ============================================================
 
@@ -201,28 +210,19 @@ window.addEventListener('DOMContentLoaded', async () => {
   tgUser = tg.initDataUnsafe.user;
   document.getElementById('user-badge').textContent = '@' + (tgUser.username || tgUser.first_name);
 
-  await initMap();
+  initMap();
   locateMe();
   await loadDB();
 });
 
 // ------ КАРТА ------
 
-async function initMap() {
-  await ymaps3.ready;
-  const { YMap, YMapDefaultSchemeLayer, YMapDefaultFeaturesLayer, YMapControls } = ymaps3;
-  const { YMapZoomControl, YMapGeolocationControl } = await ymaps3.import('@yandex/ymaps3-controls@0.0.1');
-
-  map = new YMap(document.getElementById('map'), {
-    location: { center: [37.61, 55.75], zoom: 12 },
-  });
-
-  map.addChild(new YMapDefaultSchemeLayer());
-  map.addChild(new YMapDefaultFeaturesLayer());
-
-  const controls = new YMapControls({ position: 'right' });
-  controls.addChild(new YMapZoomControl());
-  map.addChild(controls);
+function initMap() {
+  map = L.map('map', { zoomControl: true }).setView([55.75, 37.61], 12);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap',
+    maxZoom: 19,
+  }).addTo(map);
 }
 
 function locateMe() {
@@ -231,7 +231,7 @@ function locateMe() {
     pos => {
       userLat = pos.coords.latitude;
       userLng = pos.coords.longitude;
-      map.setLocation({ center: [userLng, userLat], zoom: 16, duration: 400 });
+      map.setView([userLat, userLng], 16);
       document.getElementById('btn-ser').disabled = false;
       setStatus('готово 💩');
     },
@@ -316,57 +316,40 @@ async function saveDB() {
 // ------ МАРКЕРЫ ------
 
 function renderMarkers() {
-  for (const m of Object.values(markers)) map.removeChild(m);
+  for (const m of Object.values(markers)) map.removeLayer(m);
   markers = {};
   for (const entry of db) addMarker(entry);
 }
 
+function poopIcon(username, ip) {
+  const label = ip ? `@${username}<br>${ip}` : `@${username}`;
+  return L.divIcon({
+    html: `<div style="position:relative;width:32px;height:32px">
+      <div class="marker-label">${label}</div>
+      <div style="font-size:28px;line-height:1;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.5))">💩</div>
+    </div>`,
+    className: '',
+    iconSize: [32, 32],
+    iconAnchor: [16, 32],
+    popupAnchor: [0, -50],
+  });
+}
+
 function addMarker(entry) {
   const { id, user_id, username, lat, lng, timestamp, ip } = entry;
-  const { YMapMarker } = ymaps3;
+  const marker = L.marker([lat, lng], { icon: poopIcon(username, ip) }).addTo(map);
   const date = new Date(timestamp).toLocaleString('ru-RU');
   const isOwn = String(user_id) === String(tgUser?.id);
 
-  const el = document.createElement('div');
-  el.style.cssText = 'position:relative;width:32px;height:32px;cursor:pointer';
-
-  const labelEl = document.createElement('div');
-  labelEl.className = 'marker-label';
-  labelEl.innerHTML = ip ? `@${username}<br>${ip}` : `@${username}`;
-
-  const iconEl = document.createElement('div');
-  iconEl.style.cssText = 'font-size:28px;line-height:1;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.5))';
-  iconEl.textContent = '💩';
-
-  el.appendChild(labelEl);
-  el.appendChild(iconEl);
-
-  // Popup
-  const popup = document.createElement('div');
-  popup.style.cssText = 'position:absolute;bottom:44px;left:50%;transform:translateX(-50%);background:#fff;border:2px solid #f5c542;border-radius:12px;padding:10px 14px;min-width:140px;z-index:999;display:none;box-shadow:0 4px 16px rgba(0,0,0,0.3)';
-  popup.innerHTML = `
+  marker.bindPopup(`
     <div class="popup-inner">
       <div class="popup-title">💩 Сёр тут</div>
       <div class="popup-user">@${username}</div>
-      ${ip ? `<div class="popup-user" style="font-size:11px;color:#888">${ip}</div>` : ''}
+      ${ip ? `<div class="popup-user" style="font-size:11px;color:#aaa">${ip}</div>` : ''}
       <div class="popup-time">${date}</div>
       ${isOwn ? `<button class="popup-delete" onclick="deleteMarker('${id}', this)">🗑 Удалить</button>` : ''}
-    </div>`;
+    </div>`);
 
-  el.appendChild(popup);
-
-  let popupOpen = false;
-  el.addEventListener('click', (e) => {
-    e.stopPropagation();
-    // Закрываем все другие попапы
-    document.querySelectorAll('.ymap-popup').forEach(p => p.style.display = 'none');
-    popupOpen = !popupOpen;
-    popup.style.display = popupOpen ? 'block' : 'none';
-    popup.className = 'ymap-popup';
-  });
-
-  const marker = new YMapMarker({ coordinates: [lng, lat], anchor: [0.5, 1] }, el);
-  map.addChild(marker);
   markers[id] = marker;
 }
 
@@ -431,7 +414,7 @@ async function deleteMarker(id, btn) {
     await saveDB();
 
     if (markers[id]) {
-      map.removeChild(markers[id]);
+      map.removeLayer(markers[id]);
       delete markers[id];
     }
 
