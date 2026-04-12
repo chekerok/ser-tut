@@ -5,8 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Сёр Тут</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://api-maps.yandex.ru/2.1/?apikey=e2cf8129-ff43-4729-b542-1591d12b5fef&lang=ru_RU" type="text/javascript"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Russo+One&family=Inter:wght@400;600&display=swap');
 
@@ -112,14 +111,15 @@
     background: #16213e;
   }
 
-  .leaflet-popup-content-wrapper {
+  .popup-balloon {
     background: #16213e;
     border: 2px solid #f5c542;
     border-radius: 12px;
+    padding: 10px 14px;
+    min-width: 140px;
     color: #fff;
+    font-family: 'Inter', sans-serif;
   }
-  .leaflet-popup-tip { background: #f5c542; }
-  .leaflet-popup-content { margin: 10px 14px; }
   .popup-inner { display: flex; flex-direction: column; gap: 6px; }
   .popup-title { font-family: 'Russo One', sans-serif; font-size: 15px; color: #f5c542; }
   .popup-user { font-size: 13px; color: #ccc; }
@@ -178,7 +178,7 @@
 // ============================================================
 // КОНФИГ — только токен бота, никаких внешних API ключей!
 // ============================================================
-const BOT_TOKEN = '8546740522:AAGknL1xglNM-RrMWeEoUKoIrATbuI4Z9vM';
+const BOT_TOKEN = 'ВСТАВЬ_ТОКЕН_СЮДА';
 const CHANNEL_ID = '-1003921076438';
 // ============================================================
 
@@ -210,7 +210,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   tgUser = tg.initDataUnsafe.user;
   document.getElementById('user-badge').textContent = '@' + (tgUser.username || tgUser.first_name);
 
-  initMap();
+  await initMap();
   locateMe();
   await loadDB();
 });
@@ -218,11 +218,16 @@ window.addEventListener('DOMContentLoaded', async () => {
 // ------ КАРТА ------
 
 function initMap() {
-  map = L.map('map', { zoomControl: true }).setView([55.75, 37.61], 12);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap',
-    maxZoom: 19,
-  }).addTo(map);
+  return new Promise(resolve => {
+    ymaps.ready(() => {
+      map = new ymaps.Map('map', {
+        center: [55.75, 37.61],
+        zoom: 12,
+        controls: ['zoomControl'],
+      });
+      resolve();
+    });
+  });
 }
 
 function locateMe() {
@@ -231,7 +236,7 @@ function locateMe() {
     pos => {
       userLat = pos.coords.latitude;
       userLng = pos.coords.longitude;
-      map.setView([userLat, userLng], 16);
+      map.setCenter([userLat, userLng], 16, { duration: 300 });
       document.getElementById('btn-ser').disabled = false;
       setStatus('готово 💩');
     },
@@ -316,41 +321,39 @@ async function saveDB() {
 // ------ МАРКЕРЫ ------
 
 function renderMarkers() {
-  for (const m of Object.values(markers)) map.removeLayer(m);
+  for (const m of Object.values(markers)) map.geoObjects.remove(m);
   markers = {};
   for (const entry of db) addMarker(entry);
 }
 
-function poopIcon(username, ip) {
-  const label = ip ? `@${username}<br>${ip}` : `@${username}`;
-  return L.divIcon({
-    html: `<div style="position:relative;width:32px;height:32px">
-      <div class="marker-label">${label}</div>
-      <div style="font-size:28px;line-height:1;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.5))">💩</div>
-    </div>`,
-    className: '',
-    iconSize: [32, 32],
-    iconAnchor: [16, 32],
-    popupAnchor: [0, -50],
-  });
-}
-
 function addMarker(entry) {
   const { id, user_id, username, lat, lng, timestamp, ip } = entry;
-  const marker = L.marker([lat, lng], { icon: poopIcon(username, ip) }).addTo(map);
   const date = new Date(timestamp).toLocaleString('ru-RU');
   const isOwn = String(user_id) === String(tgUser?.id);
 
-  marker.bindPopup(`
-    <div class="popup-inner">
+  const label = ip ? `@${username}<br><span style="font-size:10px;color:#aaa">${ip}</span>` : `@${username}`;
+
+  const placemark = new ymaps.Placemark([lat, lng], {
+    balloonContent: `<div class="popup-balloon"><div class="popup-inner">
       <div class="popup-title">💩 Сёр тут</div>
       <div class="popup-user">@${username}</div>
       ${ip ? `<div class="popup-user" style="font-size:11px;color:#aaa">${ip}</div>` : ''}
       <div class="popup-time">${date}</div>
       ${isOwn ? `<button class="popup-delete" onclick="deleteMarker('${id}', this)">🗑 Удалить</button>` : ''}
-    </div>`);
+    </div></div>`,
+  }, {
+    iconLayout: 'default#imageWithContent',
+    iconImageHref: '',
+    iconImageSize: [32, 32],
+    iconImageOffset: [-16, -32],
+    iconContentOffset: [-16, -70],
+    iconContentLayout: ymaps.templateLayoutFactory.createClass(
+      `<div class="marker-label">${label}</div><div style="font-size:28px;line-height:1;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.5))">💩</div>`
+    ),
+  });
 
-  markers[id] = marker;
+  map.geoObjects.add(placemark);
+  markers[id] = placemark;
 }
 
 // ------ ПОСТАВИТЬ МЕТКУ ------
@@ -414,7 +417,7 @@ async function deleteMarker(id, btn) {
     await saveDB();
 
     if (markers[id]) {
-      map.removeLayer(markers[id]);
+      map.geoObjects.remove(markers[id]);
       delete markers[id];
     }
 
