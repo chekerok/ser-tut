@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Сёр Тут</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
@@ -34,7 +35,6 @@
     padding: 32px;
     text-align: center;
   }
-
   #gate .emoji { font-size: 64px; }
   #gate h1 { font-family: 'Russo One', sans-serif; font-size: 28px; color: #f5c542; }
   #gate p { color: #aaa; font-size: 15px; line-height: 1.5; }
@@ -59,26 +59,10 @@
     z-index: 100;
     flex-shrink: 0;
   }
+  #header h1 { font-family: 'Russo One', sans-serif; font-size: 20px; color: #f5c542; letter-spacing: 1px; }
+  #user-badge { background: #0f3460; border-radius: 20px; padding: 6px 12px; font-size: 13px; color: #ccc; }
 
-  #header h1 {
-    font-family: 'Russo One', sans-serif;
-    font-size: 20px;
-    color: #f5c542;
-    letter-spacing: 1px;
-  }
-
-  #user-badge {
-    background: #0f3460;
-    border-radius: 20px;
-    padding: 6px 12px;
-    font-size: 13px;
-    color: #ccc;
-  }
-
-  #map {
-    flex: 1;
-    width: 100%;
-  }
+  #map { flex: 1; width: 100%; }
 
   #bottom-bar {
     background: #16213e;
@@ -100,13 +84,12 @@
     font-family: 'Russo One', sans-serif;
     font-size: 18px;
     cursor: pointer;
-    transition: transform 0.1s, background 0.2s;
+    transition: transform 0.1s;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
   }
-
   #btn-ser:active { transform: scale(0.97); }
   #btn-ser:disabled { background: #555; color: #999; cursor: not-allowed; }
 
@@ -118,10 +101,7 @@
     padding: 14px 16px;
     font-size: 20px;
     cursor: pointer;
-    transition: background 0.2s;
   }
-
-  #btn-locate:active { background: #1a4a8a; }
 
   #status {
     text-align: center;
@@ -132,7 +112,6 @@
     background: #16213e;
   }
 
-  /* Popup стили */
   .leaflet-popup-content-wrapper {
     background: #16213e;
     border: 2px solid #f5c542;
@@ -141,7 +120,6 @@
   }
   .leaflet-popup-tip { background: #f5c542; }
   .leaflet-popup-content { margin: 10px 14px; }
-
   .popup-inner { display: flex; flex-direction: column; gap: 6px; }
   .popup-title { font-family: 'Russo One', sans-serif; font-size: 15px; color: #f5c542; }
   .popup-user { font-size: 13px; color: #ccc; }
@@ -155,18 +133,16 @@
     padding: 6px 12px;
     font-size: 13px;
     cursor: pointer;
-    font-family: 'Inter', sans-serif;
   }
 </style>
 </head>
 <body>
 
-<!-- Заглушка если не из Telegram -->
 <div id="gate" style="display:none">
   <div class="emoji">💩</div>
   <h1>Сёр Тут</h1>
   <p>Это приложение работает только через Telegram.<br>Открой его через бота.</p>
-  <a href="https://t.me/YOUR_BOT_USERNAME">Открыть в Telegram</a>
+  <a href="https://t.me/ser_tut034_bot">Открыть в Telegram</a>
 </div>
 
 <div id="header">
@@ -174,8 +150,7 @@
   <div id="user-badge">загрузка...</div>
 </div>
 
-<div id="status">определяем геолокацию...</div>
-
+<div id="status">инициализация...</div>
 <div id="map"></div>
 
 <div id="bottom-bar">
@@ -185,23 +160,21 @@
 
 <script>
 // ============================================================
-// КОНФИГ — замени на свои значения
+// КОНФИГ — только токен бота, никаких внешних API ключей!
 // ============================================================
-const CONFIG = {
-  BOT_TOKEN: '8546740522:AAEchoijCkCXE51xG4xhEKsBRNxUHIoZTLA',
-  CHANNEL_ID: '-1003921076438',
-  SHEETS_ID: '1SJvYMNQb_CPDy3RsP7_m_uVkNTO5C5PsmxoXqMUE3Xw',
-  SERVICE_ACCOUNT_EMAIL: 'ser-tut-bot@ser-tut.iam.gserviceaccount.com',
-  // private_key из JSON файла:
-  PRIVATE_KEY: `-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCV1IykVhUTzx0E\nyWGoWUTM0JMtX+syp1O8dDqm7XkY8s/1k7LzVetoVbgybALnMpTBksAmITmZm7IG\n6xxuR6aI9kgLjS8dTSMOM7Jei1BFpSytVvmRlw1/0jeG2Aav9CzwqOqcwQFbT+0a\ncuCXcPKH0S4rdjzeSQ0KEO/EG3JQjfIiFRXU3aI5JDYMIJsO+Uwbl7eTnAFUOt0o\nd5pSEl61k+5QjEiZ5tAO8af567iYreNgTlOiitPR2EMQPIzP5dgQrZU/pDn/br1r\n88leimBlv87ksYL/oO3vLhSxzKTVuxS4W31bJnzEaUzvqlCoKqtFy7DlTBvNEVE1\n65YwKzevAgMBAAECggEAAPTvAvujvdEkQ8wPahZL2Kz6S59hrpyf7cOmPjuk+tJO\nHqjXSzOAwdVOTFAhQp2xknzf6j5rEj6Kx/2HXHLrrtM3yY8YvmyoLSaKXI0yMYeo\n/eBgzpuy096hSSSnAkeiY9UIToDzA8TCZFlYcs8fVVuyGkfygo7f3PEXvt5YAAit\ng1IppYi+gjPsw5DSFRFMli8xLHdlhkz3qSs20C2DirTjh06H9gUwO/0rWEAoHmTw\nPl5w4afxv1gOdAbYhUH9QeidjjYRZxwIQOfYCxEczamJxpe9MYL5O2UY3EieMnwf\nCRz2YZHd2cRqOl4FN/Wd1zYh7gWuNatdd49v0MyaxQKBgQDD9y7x/+EZPzGKZPtJ\n6lwY9uO4nvZrDuW9DWfIVf21oV7NSSiCH4sgb4858CfsA12wyI8tARGOu99fTzx8\nCS/m2GqOmnYNIKgj6vLdaKJ49dFBuLvFPgJEnJ03yB0D6m2sN74qTjRL4dqWFxZa\n0qAOMoK5VnD+NB09o+1Jlfu7FQKBgQDDuyec1HEKFErG4TTTMw/M/4Y0YhmC4aEA\nNqpJo8ttTXHZpSyOx/QmzBkgZnATNFKPYmpGr6ZKG+dGMCX2aM61B2cjgGb+k+GZ\nPG7BMhBbMBrwMDubWOpdPso1EmC62pdplRulTj9QnKkFRyUwQ7/0WVePx18aUyxF\nKg/PDsPIswKBgQCWhKvYUTPykmlY5YtmEM7AlhH/YonfXUf01/EZHYOMGPCaOVEV\n8WiJd2bJl77yNvulp8bhSGrV+VPu/wt0MhJK+3uNIPL/zk+XlwUILzBsPFOIaX5A\nWAqh7LGNgPVYZp3qo746/GqKxmWA1ybih9lMTlu+Q7jyZ9D14Y2G8d6yqQKBgQDD\npb8556y6e4AnfhOUjTTdIAohMHH5vtl1Yi8jfuOn9UK5YH7CliJ56YewOFUNDT79\nbk13LLqW1399TEGWJjuA/s5c0Uuia2WVC7BV01pAHDzBHCVo6h8SZ+It3JnuDPRO\nqKpCuY1WYdIdoXkN3prwf6Gj6ZEpujvFQv8cZNDVOwKBgBtQtWR6eGJr17oegNcg\ntAvB95K0Imd+zY5tot/8n/oW1WMy+728sZy21yI1Cwc/AN9oqXTPMIlQx6rajpOC\nhGif/izkaTG5gSj7ncs7dFX30INLK41vYcrCg9Z7Ue5AKvf2OvIOhxL8iTmQ6rwi\nteHgOWi4o9RveHEHgpd42ma7\n-----END PRIVATE KEY-----\n`,
-};
+const BOT_TOKEN = 'ВСТАВЬ_ТОКЕН_СЮДА';
+const CHANNEL_ID = '-1003921076438';
 // ============================================================
+
+const API = `https://api.telegram.org/bot${BOT_TOKEN}`;
 
 let tgUser = null;
 let userLat = null;
 let userLng = null;
 let map = null;
-let markers = {}; // message_id -> leaflet marker
+let markers = {};
+let dbMessageId = null; // id закреплённого сообщения — это наша БД
+let db = [];            // массив меток
 
 // ------ ИНИЦИАЛИЗАЦИЯ ------
 
@@ -223,7 +196,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   initMap();
   locateMe();
-  await loadMarkers();
+  await loadDB();
 });
 
 // ------ КАРТА ------
@@ -246,9 +219,7 @@ function locateMe() {
       document.getElementById('btn-ser').disabled = false;
       setStatus('готово 💩');
     },
-    err => {
-      setStatus('ошибка геолокации: ' + err.message);
-    },
+    err => setStatus('ошибка геолокации: ' + err.message),
     { enableHighAccuracy: true }
   );
 }
@@ -256,8 +227,6 @@ function locateMe() {
 function setStatus(msg) {
   document.getElementById('status').textContent = msg;
 }
-
-// ------ ИКОНКА ------
 
 function poopIcon() {
   return L.divIcon({
@@ -269,41 +238,130 @@ function poopIcon() {
   });
 }
 
-// ------ ДОБАВИТЬ МЕТКУ ------
+// ------ БД: закреплённое сообщение в канале ------
+
+async function loadDB() {
+  setStatus('загружаем метки...');
+  try {
+    const res = await fetch(`${API}/getChat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: CHANNEL_ID }),
+    });
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.description);
+
+    const pinned = data.result.pinned_message;
+
+    if (!pinned) {
+      await initDB();
+    } else {
+      dbMessageId = pinned.message_id;
+      try { db = JSON.parse(pinned.text); } catch { db = []; }
+      renderMarkers();
+    }
+
+    setStatus('готово 💩');
+  } catch (e) {
+    console.error(e);
+    setStatus('ошибка: ' + e.message);
+  }
+}
+
+async function initDB() {
+  // Первый запуск — создаём закреплённое сообщение с пустым массивом
+  const res = await fetch(`${API}/sendMessage`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ chat_id: CHANNEL_ID, text: '[]' }),
+  });
+  const data = await res.json();
+  if (!data.ok) throw new Error(data.description);
+
+  dbMessageId = data.result.message_id;
+
+  await fetch(`${API}/pinChatMessage`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      chat_id: CHANNEL_ID,
+      message_id: dbMessageId,
+      disable_notification: true,
+    }),
+  });
+
+  db = [];
+}
+
+async function saveDB() {
+  await fetch(`${API}/editMessageText`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      chat_id: CHANNEL_ID,
+      message_id: dbMessageId,
+      text: JSON.stringify(db),
+    }),
+  });
+}
+
+// ------ МАРКЕРЫ ------
+
+function renderMarkers() {
+  for (const m of Object.values(markers)) map.removeLayer(m);
+  markers = {};
+  for (const entry of db) addMarker(entry);
+}
+
+function addMarker(entry) {
+  const { id, user_id, username, lat, lng, timestamp } = entry;
+  const marker = L.marker([lat, lng], { icon: poopIcon() }).addTo(map);
+  const date = new Date(timestamp).toLocaleString('ru-RU');
+  const isOwn = String(user_id) === String(tgUser?.id);
+
+  marker.bindPopup(`
+    <div class="popup-inner">
+      <div class="popup-title">💩 Сёр тут</div>
+      <div class="popup-user">@${username}</div>
+      <div class="popup-time">${date}</div>
+      ${isOwn ? `<button class="popup-delete" onclick="deleteMarker('${id}', this)">🗑 Удалить</button>` : ''}
+    </div>`);
+
+  markers[id] = marker;
+}
+
+// ------ ПОСТАВИТЬ МЕТКУ ------
 
 async function serTut() {
-  if (!userLat || !userLng) {
-    setStatus('сначала дождись геолокации!');
-    return;
-  }
+  if (!userLat || !userLng) { setStatus('сначала дождись геолокации!'); return; }
 
   const btn = document.getElementById('btn-ser');
   btn.disabled = true;
   setStatus('ставим метку...');
 
   try {
-    // 1. Пишем в Telegram канал
-    const text = `💩 @${tgUser.username || tgUser.first_name}\n${userLat},${userLng}\n${Date.now()}`;
-    const tgRes = await fetch(`https://api.telegram.org/bot${CONFIG.BOT_TOKEN}/sendMessage`, {
+    const entry = {
+      id: Date.now().toString(),
+      user_id: String(tgUser.id),
+      username: tgUser.username || tgUser.first_name,
+      lat: userLat,
+      lng: userLng,
+      timestamp: Date.now(),
+    };
+
+    // Лог-сообщение в канал (для красоты)
+    await fetch(`${API}/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chat_id: CONFIG.CHANNEL_ID, text }),
+      body: JSON.stringify({
+        chat_id: CHANNEL_ID,
+        text: `💩 @${entry.username} насёр тут\n📍 ${entry.lat.toFixed(5)}, ${entry.lng.toFixed(5)}`,
+      }),
     });
-    const tgData = await tgRes.json();
 
-    if (!tgData.ok) throw new Error('Telegram error: ' + tgData.description);
-
-    const messageId = tgData.result.message_id;
-    const username = tgUser.username || tgUser.first_name;
-    const userId = String(tgUser.id);
-    const ts = Date.now();
-
-    // 2. Пишем в Google Sheets
-    await sheetsAppend([messageId, userId, username, userLat, userLng, ts]);
-
-    // 3. Добавляем маркер на карту
-    addMarker({ message_id: messageId, username, user_id: userId, lat: userLat, lng: userLng, timestamp: ts });
-
+    db.push(entry);
+    await saveDB();
+    addMarker(entry);
     setStatus('метка поставлена! 💩');
   } catch (e) {
     console.error(e);
@@ -313,71 +371,19 @@ async function serTut() {
   btn.disabled = false;
 }
 
-// ------ ЗАГРУЗИТЬ ВСЕ МЕТКИ ------
-
-async function loadMarkers() {
-  setStatus('загружаем метки...');
-  try {
-    const token = await getSheetsToken();
-    const url = `https://sheets.googleapis.com/v4/spreadsheets/${CONFIG.SHEETS_ID}/values/Sheet1!A2:F1000`;
-    const res = await fetch(url, { headers: { Authorization: 'Bearer ' + token } });
-    const data = await res.json();
-
-    if (data.values) {
-      for (const row of data.values) {
-        const [message_id, user_id, username, lat, lng, timestamp] = row;
-        if (lat && lng) {
-          addMarker({ message_id, user_id, username, lat: parseFloat(lat), lng: parseFloat(lng), timestamp });
-        }
-      }
-    }
-    setStatus('готово 💩');
-  } catch (e) {
-    console.error(e);
-    setStatus('ошибка загрузки меток');
-  }
-}
-
-// ------ ДОБАВИТЬ МАРКЕР ------
-
-function addMarker({ message_id, user_id, username, lat, lng, timestamp }) {
-  const marker = L.marker([lat, lng], { icon: poopIcon() }).addTo(map);
-  const date = new Date(parseInt(timestamp)).toLocaleString('ru-RU');
-  const isOwn = String(user_id) === String(tgUser?.id);
-
-  const popupHtml = `
-    <div class="popup-inner">
-      <div class="popup-title">💩 Сёр тут</div>
-      <div class="popup-user">@${username}</div>
-      <div class="popup-time">${date}</div>
-      ${isOwn ? `<button class="popup-delete" onclick="deleteMarker('${message_id}', this)">🗑 Удалить</button>` : ''}
-    </div>`;
-
-  marker.bindPopup(popupHtml);
-  markers[message_id] = marker;
-}
-
 // ------ УДАЛИТЬ МЕТКУ ------
 
-async function deleteMarker(messageId, btn) {
+async function deleteMarker(id, btn) {
   btn.disabled = true;
   btn.textContent = 'удаляем...';
 
   try {
-    // 1. Удаляем из Telegram
-    await fetch(`https://api.telegram.org/bot${CONFIG.BOT_TOKEN}/deleteMessage`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chat_id: CONFIG.CHANNEL_ID, message_id: parseInt(messageId) }),
-    });
+    db = db.filter(e => e.id !== id);
+    await saveDB();
 
-    // 2. Удаляем из Sheets
-    await sheetsDeleteRow(messageId);
-
-    // 3. Убираем с карты
-    if (markers[messageId]) {
-      map.removeLayer(markers[messageId]);
-      delete markers[messageId];
+    if (markers[id]) {
+      map.removeLayer(markers[id]);
+      delete markers[id];
     }
 
     setStatus('метка удалена');
@@ -387,98 +393,6 @@ async function deleteMarker(messageId, btn) {
     btn.textContent = '🗑 Удалить';
     setStatus('ошибка удаления');
   }
-}
-
-// ============================================================
-// GOOGLE SHEETS API (JWT auth)
-// ============================================================
-
-let sheetsTokenCache = null;
-let sheetsTokenExpiry = 0;
-
-async function getSheetsToken() {
-  if (sheetsTokenCache && Date.now() < sheetsTokenExpiry) return sheetsTokenCache;
-
-  const now = Math.floor(Date.now() / 1000);
-  const header = btoa(JSON.stringify({ alg: 'RS256', typ: 'JWT' })).replace(/=/g,'').replace(/\+/g,'-').replace(/\//g,'_');
-  const claim = btoa(JSON.stringify({
-    iss: CONFIG.SERVICE_ACCOUNT_EMAIL,
-    scope: 'https://www.googleapis.com/auth/spreadsheets',
-    aud: 'https://oauth2.googleapis.com/token',
-    exp: now + 3600,
-    iat: now,
-  })).replace(/=/g,'').replace(/\+/g,'-').replace(/\//g,'_');
-
-  const unsigned = header + '.' + claim;
-  const signature = await signRS256(unsigned, CONFIG.PRIVATE_KEY);
-  const jwt = unsigned + '.' + signature;
-
-  const res = await fetch('https://oauth2.googleapis.com/token', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: `grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer&assertion=${jwt}`,
-  });
-  const data = await res.json();
-
-  sheetsTokenCache = data.access_token;
-  sheetsTokenExpiry = Date.now() + 3500 * 1000;
-  return sheetsTokenCache;
-}
-
-async function signRS256(data, pemKey) {
-  const pemContents = pemKey.replace(/-----BEGIN PRIVATE KEY-----|-----END PRIVATE KEY-----|\n/g, '');
-  const binaryDer = Uint8Array.from(atob(pemContents), c => c.charCodeAt(0));
-  const cryptoKey = await crypto.subtle.importKey(
-    'pkcs8', binaryDer.buffer,
-    { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' },
-    false, ['sign']
-  );
-  const encoder = new TextEncoder();
-  const sig = await crypto.subtle.sign('RSASSA-PKCS1-v1_5', cryptoKey, encoder.encode(data));
-  return btoa(String.fromCharCode(...new Uint8Array(sig))).replace(/=/g,'').replace(/\+/g,'-').replace(/\//g,'_');
-}
-
-async function sheetsAppend(row) {
-  const token = await getSheetsToken();
-  await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${CONFIG.SHEETS_ID}/values/Sheet1!A1:F1:append?valueInputOption=RAW`, {
-    method: 'POST',
-    headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ values: [row] }),
-  });
-}
-
-async function sheetsDeleteRow(messageId) {
-  const token = await getSheetsToken();
-
-  // Читаем все строки чтобы найти нужную
-  const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${CONFIG.SHEETS_ID}/values/Sheet1!A2:A1000`, {
-    headers: { Authorization: 'Bearer ' + token },
-  });
-  const data = await res.json();
-
-  if (!data.values) return;
-  const rowIndex = data.values.findIndex(r => String(r[0]) === String(messageId));
-  if (rowIndex === -1) return;
-
-  // Получаем sheetId
-  const metaRes = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${CONFIG.SHEETS_ID}`, {
-    headers: { Authorization: 'Bearer ' + token },
-  });
-  const meta = await metaRes.json();
-  const sheetId = meta.sheets[0].properties.sheetId;
-
-  // Удаляем строку (rowIndex + 1 потому что строки с 2й, +1 для 0-индекса)
-  await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${CONFIG.SHEETS_ID}:batchUpdate`, {
-    method: 'POST',
-    headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      requests: [{
-        deleteDimension: {
-          range: { sheetId, dimension: 'ROWS', startIndex: rowIndex + 1, endIndex: rowIndex + 2 }
-        }
-      }]
-    }),
-  });
 }
 </script>
 </body>
