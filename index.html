@@ -150,6 +150,29 @@
     font-size: 13px;
     cursor: pointer;
   }
+
+  @keyframes poopDrop {
+    0%   { transform: translateY(-60px) scaleX(1)   scaleY(1);   opacity: 0; }
+    60%  { transform: translateY(0px)  scaleX(1)   scaleY(1);   opacity: 1; }
+    72%  { transform: translateY(4px)  scaleX(1.35) scaleY(0.6); }
+    84%  { transform: translateY(-6px) scaleX(0.85) scaleY(1.2); }
+    92%  { transform: translateY(2px)  scaleX(1.1)  scaleY(0.9); }
+    100% { transform: translateY(0px)  scaleX(1)   scaleY(1);   opacity: 1; }
+  }
+
+  .poop-drop {
+    animation: poopDrop 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    transform-origin: bottom center;
+    display: inline-block;
+  }
+
+  @keyframes btnPulse {
+    0%   { transform: scale(1); }
+    40%  { transform: scale(0.93); }
+    70%  { transform: scale(1.06); }
+    100% { transform: scale(1); }
+  }
+  .btn-pulse { animation: btnPulse 0.4s ease forwards; }
 </style>
 </head>
 <body>
@@ -178,7 +201,7 @@
 // ============================================================
 // КОНФИГ — только токен бота, никаких внешних API ключей!
 // ============================================================
-const BOT_TOKEN = '8546740522:AAGknL1xglNM-RrMWeEoUKoIrATbuI4Z9vM';
+const BOT_TOKEN = 'ВСТАВЬ_ТОКЕН_СЮДА';
 const CHANNEL_ID = '-1003921076438';
 // ============================================================
 
@@ -326,12 +349,13 @@ function renderMarkers() {
   for (const entry of db) addMarker(entry);
 }
 
-function addMarker(entry) {
+function addMarker(entry, animate = false) {
   const { id, user_id, username, lat, lng, timestamp, ip } = entry;
   const date = new Date(timestamp).toLocaleString('ru-RU');
   const isOwn = String(user_id) === String(tgUser?.id);
 
   const label = ip ? `@${username}<br><span style="font-size:10px;color:#aaa">${ip}</span>` : `@${username}`;
+  const animClass = animate ? 'poop-drop' : '';
 
   const placemark = new ymaps.Placemark([lat, lng], {
     balloonContent: `<div class="popup-balloon"><div class="popup-inner">
@@ -348,12 +372,68 @@ function addMarker(entry) {
     iconImageOffset: [-16, -32],
     iconContentOffset: [-16, -70],
     iconContentLayout: ymaps.templateLayoutFactory.createClass(
-      `<div class="marker-label">${label}</div><div style="font-size:28px;line-height:1;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.5))">💩</div>`
+      `<div class="marker-label">${label}</div><div class="${animClass}" style="font-size:28px;line-height:1;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.5));transform-origin:bottom center">💩</div>`
     ),
   });
 
   map.geoObjects.add(placemark);
   markers[id] = placemark;
+}
+
+// ------ ЗВУК ------
+
+function playPoopSound() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+
+    // Низкий "бульк"
+    const osc1 = ctx.createOscillator();
+    const gain1 = ctx.createGain();
+    osc1.connect(gain1); gain1.connect(ctx.destination);
+    osc1.type = 'sine';
+    osc1.frequency.setValueAtTime(180, ctx.currentTime);
+    osc1.frequency.exponentialRampToValueAtTime(60, ctx.currentTime + 0.18);
+    gain1.gain.setValueAtTime(0.55, ctx.currentTime);
+    gain1.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.22);
+    osc1.start(ctx.currentTime);
+    osc1.stop(ctx.currentTime + 0.22);
+
+    // Шлепок
+    const bufSize = ctx.sampleRate * 0.08;
+    const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+    const data = buf.getChannelData(0);
+    for (let i = 0; i < bufSize; i++) data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bufSize, 3);
+    const noise = ctx.createBufferSource();
+    noise.buffer = buf;
+    const gainN = ctx.createGain();
+    gainN.gain.setValueAtTime(0.35, ctx.currentTime + 0.05);
+    gainN.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.13);
+    noise.connect(gainN); gainN.connect(ctx.destination);
+    noise.start(ctx.currentTime + 0.05);
+
+    // Высокий "пип" для комизма
+    const osc2 = ctx.createOscillator();
+    const gain2 = ctx.createGain();
+    osc2.connect(gain2); gain2.connect(ctx.destination);
+    osc2.type = 'sine';
+    osc2.frequency.setValueAtTime(520, ctx.currentTime + 0.15);
+    osc2.frequency.exponentialRampToValueAtTime(280, ctx.currentTime + 0.32);
+    gain2.gain.setValueAtTime(0.18, ctx.currentTime + 0.15);
+    gain2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
+    osc2.start(ctx.currentTime + 0.15);
+    osc2.stop(ctx.currentTime + 0.35);
+
+  } catch(e) { /* тихий фейл если аудио заблокировано */ }
+}
+
+// ------ АНИМАЦИЯ КНОПКИ ------
+
+function animateBtn() {
+  const btn = document.getElementById('btn-ser');
+  btn.classList.remove('btn-pulse');
+  void btn.offsetWidth; // reflow
+  btn.classList.add('btn-pulse');
+  setTimeout(() => btn.classList.remove('btn-pulse'), 400);
 }
 
 // ------ ПОСТАВИТЬ МЕТКУ ------
@@ -396,7 +476,9 @@ async function serTut() {
 
     db.push(entry);
     await saveDB();
-    addMarker(entry);
+    playPoopSound();
+    animateBtn();
+    addMarker(entry, true);
     setStatus('метка поставлена! 💩');
   } catch (e) {
     console.error(e);
