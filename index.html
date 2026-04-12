@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Сёр Тут</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
@@ -188,12 +189,38 @@
 // КОНФИГ — замени на свои значения
 // ============================================================
 const CONFIG = {
-  BOT_TOKEN: '8546740522:AAEchoijCkCXE51xG4xhEKsBRNxUHIoZTLA',
+  BOT_TOKEN: 'ВСТАВЬ_НОВЫЙ_ТОКЕН_СЮДА',
   CHANNEL_ID: '-1003921076438',
   SHEETS_ID: '1SJvYMNQb_CPDy3RsP7_m_uVkNTO5C5PsmxoXqMUE3Xw',
   SERVICE_ACCOUNT_EMAIL: 'ser-tut-bot@ser-tut.iam.gserviceaccount.com',
-  // private_key из JSON файла:
-  PRIVATE_KEY: `-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCV1IykVhUTzx0E\nyWGoWUTM0JMtX+syp1O8dDqm7XkY8s/1k7LzVetoVbgybALnMpTBksAmITmZm7IG\n6xxuR6aI9kgLjS8dTSMOM7Jei1BFpSytVvmRlw1/0jeG2Aav9CzwqOqcwQFbT+0a\ncuCXcPKH0S4rdjzeSQ0KEO/EG3JQjfIiFRXU3aI5JDYMIJsO+Uwbl7eTnAFUOt0o\nd5pSEl61k+5QjEiZ5tAO8af567iYreNgTlOiitPR2EMQPIzP5dgQrZU/pDn/br1r\n88leimBlv87ksYL/oO3vLhSxzKTVuxS4W31bJnzEaUzvqlCoKqtFy7DlTBvNEVE1\n65YwKzevAgMBAAECggEAAPTvAvujvdEkQ8wPahZL2Kz6S59hrpyf7cOmPjuk+tJO\nHqjXSzOAwdVOTFAhQp2xknzf6j5rEj6Kx/2HXHLrrtM3yY8YvmyoLSaKXI0yMYeo\n/eBgzpuy096hSSSnAkeiY9UIToDzA8TCZFlYcs8fVVuyGkfygo7f3PEXvt5YAAit\ng1IppYi+gjPsw5DSFRFMli8xLHdlhkz3qSs20C2DirTjh06H9gUwO/0rWEAoHmTw\nPl5w4afxv1gOdAbYhUH9QeidjjYRZxwIQOfYCxEczamJxpe9MYL5O2UY3EieMnwf\nCRz2YZHd2cRqOl4FN/Wd1zYh7gWuNatdd49v0MyaxQKBgQDD9y7x/+EZPzGKZPtJ\n6lwY9uO4nvZrDuW9DWfIVf21oV7NSSiCH4sgb4858CfsA12wyI8tARGOu99fTzx8\nCS/m2GqOmnYNIKgj6vLdaKJ49dFBuLvFPgJEnJ03yB0D6m2sN74qTjRL4dqWFxZa\n0qAOMoK5VnD+NB09o+1Jlfu7FQKBgQDDuyec1HEKFErG4TTTMw/M/4Y0YhmC4aEA\nNqpJo8ttTXHZpSyOx/QmzBkgZnATNFKPYmpGr6ZKG+dGMCX2aM61B2cjgGb+k+GZ\nPG7BMhBbMBrwMDubWOpdPso1EmC62pdplRulTj9QnKkFRyUwQ7/0WVePx18aUyxF\nKg/PDsPIswKBgQCWhKvYUTPykmlY5YtmEM7AlhH/YonfXUf01/EZHYOMGPCaOVEV\n8WiJd2bJl77yNvulp8bhSGrV+VPu/wt0MhJK+3uNIPL/zk+XlwUILzBsPFOIaX5A\nWAqh7LGNgPVYZp3qo746/GqKxmWA1ybih9lMTlu+Q7jyZ9D14Y2G8d6yqQKBgQDD\npb8556y6e4AnfhOUjTTdIAohMHH5vtl1Yi8jfuOn9UK5YH7CliJ56YewOFUNDT79\nbk13LLqW1399TEGWJjuA/s5c0Uuia2WVC7BV01pAHDzBHCVo6h8SZ+It3JnuDPRO\nqKpCuY1WYdIdoXkN3prwf6Gj6ZEpujvFQv8cZNDVOwKBgBtQtWR6eGJr17oegNcg\ntAvB95K0Imd+zY5tot/8n/oW1WMy+728sZy21yI1Cwc/AN9oqXTPMIlQx6rajpOC\nhGif/izkaTG5gSj7ncs7dFX30INLK41vYcrCg9Z7Ue5AKvf2OvIOhxL8iTmQ6rwi\nteHgOWi4o9RveHEHgpd42ma7\n-----END PRIVATE KEY-----\n`,
+  PRIVATE_KEY: `-----BEGIN PRIVATE KEY-----
+MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCV1IykVhUTzx0E
+yWGoWUTM0JMtX+syp1O8dDqm7XkY8s/1k7LzVetoVbgybALnMpTBksAmITmZm7IG
+6xxuR6aI9kgLjS8dTSMOM7Jei1BFpSytVvmRlw1/0jeG2Aav9CzwqOqcwQFbT+0a
+cuCXcPKH0S4rdjzeSQ0KEO/EG3JQjfIiFRXU3aI5JDYMIJsO+Uwbl7eTnAFUOt0o
+d5pSEl61k+5QjEiZ5tAO8af567iYreNgTlOiitPR2EMQPIzP5dgQrZU/pDn/br1r
+88leimBlv87ksYL/oO3vLhSxzKTVuxS4W31bJnzEaUzvqlCoKqtFy7DlTBvNEVE1
+65YwKzevAgMBAAECggEAAPTvAvujvdEkQ8wPahZL2Kz6S59hrpyf7cOmPjuk+tJO
+HqjXSzOAwdVOTFAhQp2xknzf6j5rEj6Kx/2HXHLrrtM3yY8YvmyoLSaKXI0yMYeo
+/eBgzpuy096hSSSnAkeiY9UIToDzA8TCZFlYcs8fVVuyGkfygo7f3PEXvt5YAAit
+g1IppYi+gjPsw5DSFRFMli8xLHdlhkz3qSs20C2DirTjh06H9gUwO/0rWEAoHmTw
+Pl5w4afxv1gOdAbYhUH9QeidjjYRZxwIQOfYCxEczamJxpe9MYL5O2UY3EieMnwf
+CRz2YZHd2cRqOl4FN/Wd1zYh7gWuNatdd49v0MyaxQKBgQDD9y7x/+EZPzGKZPtJ
+6lwY9uO4nvZrDuW9DWfIVf21oV7NSSiCH4sgb4858CfsA12wyI8tARGOu99fTzx8
+CS/m2GqOmnYNIKgj6vLdaKJ49dFBuLvFPgJEnJ03yB0D6m2sN74qTjRL4dqWFxZa
+0qAOMoK5VnD+NB09o+1Jlfu7FQKBgQDDuyec1HEKFErG4TTTMw/M/4Y0YhmC4aEA
+NqpJo8ttTXHZpSyOx/QmzBkgZnATNFKPYmpGr6ZKG+dGMCX2aM61B2cjgGb+k+GZ
+PG7BMhBbMBrwMDubWOpdPso1EmC62pdplRulTj9QnKkFRyUwQ7/0WVePx18aUyxF
+Kg/PDsPIswKBgQCWhKvYUTPykmlY5YtmEM7AlhH/YonfXUf01/EZHYOMGPCaOVEV
+8WiJd2bJl77yNvulp8bhSGrV+VPu/wt0MhJK+3uNIPL/zk+XlwUILzBsPFOIaX5A
+WAqh7LGNgPVYZp3qo746/GqKxmWA1ybih9lMTlu+Q7jyZ9D14Y2G8d6yqQKBgQDD
+pb8556y6e4AnfhOUjTTdIAohMHH5vtl1Yi8jfuOn9UK5YH7CliJ56YewOFUNDT79
+bk13LLqW1399TEGWJjuA/s5c0Uuia2WVC7BV01pAHDzBHCVo6h8SZ+It3JnuDPRO
+qKpCuY1WYdIdoXkN3prwf6Gj6ZEpujvFQv8cZNDVOwKBgBtQtWR6eGJr17oegNcg
+tAvB95K0Imd+zY5tot/8n/oW1WMy+728sZy21yI1Cwc/AN9oqXTPMIlQx6rajpOC
+hGif/izkaTG5gSj7ncs7dFX30INLK41vYcrCg9Z7Ue5AKvf2OvIOhxL8iTmQ6rwi
+teHgOWi4o9RveHEHgpd42ma7
+-----END PRIVATE KEY-----`,
 };
 // ============================================================
 
