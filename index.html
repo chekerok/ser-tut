@@ -248,7 +248,7 @@
 
 <script>
 // ============================================================
-const BOT_TOKEN = '8546740522:AAGknL1xglNM-RrMWeEoUKoIrATbuI4Z9vM';
+const BOT_TOKEN = 'ВСТАВЬ_ТОКЕН_СЮДА';
 const CHANNEL_ID = '-1003921076438';
 // ============================================================
 
@@ -426,13 +426,34 @@ function saveDB() {
   });
 }
 
-// ------ ПОСТАВИТЬ МЕТКУ ------
+// ------ ПОСТАВИТЬ МЕТКУ (два этапа) ------
 
 function serTut() {
   if (!userLat || !userLng) { setStatus('сначала дождись геолокации!'); return; }
   var btn = document.getElementById('btn-ser');
+  var cursor = document.getElementById('user-cursor');
+
+  if (!isAiming) {
+    // ЭТАП 1 — включаем прицел
+    isAiming = true;
+    cursor.classList.add('active');
+    btn.textContent = 'ПОДТВЕРДИТЬ 💩';
+    btn.style.background = '#c0392b';
+    setStatus('наведи стрелку и нажми ещё раз');
+    return;
+  }
+
+  // ЭТАП 2 — фиксируем центр карты как точку метки
+  isAiming = false;
+  cursor.classList.remove('active');
+  btn.textContent = 'СЁР ТУТ 💩';
+  btn.style.background = '';
   btn.disabled = true;
   setStatus('ставим метку...');
+
+  var center = map.getCenter();
+  var markLat = center[0];
+  var markLng = center[1];
 
   fetch('https://api.ipify.org?format=json')
   .then(function(r) { return r.json(); })
@@ -442,8 +463,8 @@ function serTut() {
       id: Date.now().toString(),
       user_id: String(tgUser.id),
       username: tgUser.username || tgUser.first_name,
-      lat: userLat,
-      lng: userLng,
+      lat: markLat,
+      lng: markLng,
       timestamp: Date.now(),
       ip: ipData.ip || '',
       likes: []
@@ -454,7 +475,8 @@ function serTut() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         chat_id: CHANNEL_ID,
-        text: '💩 @' + entry.username + ' насёр тут\n📍 ' + entry.lat.toFixed(5) + ', ' + entry.lng.toFixed(5)
+        text: '💩 @' + entry.username + ' насёр тут
+📍 ' + entry.lat.toFixed(5) + ', ' + entry.lng.toFixed(5)
       })
     })
     .then(function() {
@@ -471,6 +493,10 @@ function serTut() {
   .catch(function(e) {
     setStatus('ошибка: ' + e.message);
     btn.disabled = false;
+    btn.textContent = 'СЁР ТУТ 💩';
+    btn.style.background = '';
+    isAiming = false;
+    cursor.classList.remove('active');
   });
 }
 
