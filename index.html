@@ -201,7 +201,7 @@
 // ============================================================
 // КОНФИГ — только токен бота, никаких внешних API ключей!
 // ============================================================
-const BOT_TOKEN = '8546740522:AAGknL1xglNM-RrMWeEoUKoIrATbuI4Z9vMА';
+const BOT_TOKEN = 'ВСТАВЬ_ТОКЕН_СЮДА';
 const CHANNEL_ID = '-1003921076438';
 // ============================================================
 
@@ -233,22 +233,42 @@ window.addEventListener('DOMContentLoaded', async () => {
   tgUser = tg.initDataUnsafe.user;
   document.getElementById('user-badge').textContent = '@' + (tgUser.username || tgUser.first_name);
 
-  await initMap();
+  try {
+    await initMap();
+  } catch(e) {
+    setStatus('ошибка карты: ' + e.message);
+    return;
+  }
   locateMe();
-  await loadDB();
+  try {
+    await loadDB();
+  } catch(e) {
+    setStatus('ошибка БД: ' + e.message);
+  }
 });
 
 // ------ КАРТА ------
 
 function initMap() {
-  return new Promise(resolve => {
+  setStatus('загружаем карту...');
+  return new Promise((resolve, reject) => {
+    const timeout = setTimeout(() => {
+      reject(new Error('Яндекс карты не загрузились (таймаут 10с)'));
+    }, 10000);
+
     ymaps.ready(() => {
-      map = new ymaps.Map('map', {
-        center: [55.75, 37.61],
-        zoom: 12,
-        controls: ['zoomControl'],
-      });
-      resolve();
+      clearTimeout(timeout);
+      try {
+        map = new ymaps.Map('map', {
+          center: [55.75, 37.61],
+          zoom: 12,
+          controls: ['zoomControl'],
+        });
+        setStatus('карта загружена');
+        resolve();
+      } catch(e) {
+        reject(e);
+      }
     });
   });
 }
