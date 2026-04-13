@@ -146,21 +146,18 @@
     z-index: 9000;
     left: 50%;
     top: 50%;
-    transform: translate(-50%, -100%);
+    transform: translate(-50%, -50%);
     display: none;
   }
-  #user-cursor svg {
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
-  }
 
-  @keyframes cursorBounce {
-    0%   { transform: translateX(-50%) translateY(0px); }
-    50%  { transform: translateX(-50%) translateY(14px); }
-    100% { transform: translateX(-50%) translateY(0px); }
+  @keyframes crosshairPulse {
+    0%   { transform: translate(-50%, -50%) scale(1);    opacity: 1; }
+    50%  { transform: translate(-50%, -50%) scale(0.82); opacity: 0.7; }
+    100% { transform: translate(-50%, -50%) scale(1);    opacity: 1; }
   }
   #user-cursor.active {
     display: block;
-    animation: cursorBounce 1.8s ease-in-out infinite;
+    animation: crosshairPulse 1.6s ease-in-out infinite;
   }
 
   /* ---- АНИМАЦИИ ---- */
@@ -226,9 +223,17 @@
 <div id="status">инициализация...</div>
 <div id="map"></div>
 <div id="user-cursor">
-  <svg width="24" height="60" viewBox="0 0 24 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <line x1="12" y1="0" x2="12" y2="44" stroke="#e53e3e" stroke-width="4" stroke-linecap="round"/>
-    <polyline points="2,34 12,54 22,34" stroke="#e53e3e" stroke-width="4" stroke-linejoin="round" stroke-linecap="round" fill="none"/>
+  <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- верхняя линия -->
+    <line x1="30" y1="4"  x2="30" y2="22" stroke="#e53e3e" stroke-width="4" stroke-linecap="round"/>
+    <!-- нижняя линия -->
+    <line x1="30" y1="38" x2="30" y2="56" stroke="#e53e3e" stroke-width="4" stroke-linecap="round"/>
+    <!-- левая линия -->
+    <line x1="4"  y1="30" x2="22" y2="30" stroke="#e53e3e" stroke-width="4" stroke-linecap="round"/>
+    <!-- правая линия -->
+    <line x1="38" y1="30" x2="56" y2="30" stroke="#e53e3e" stroke-width="4" stroke-linecap="round"/>
+    <!-- центральная точка -->
+    <circle cx="30" cy="30" r="3" fill="#e53e3e"/>
   </svg>
 </div>
 <div id="bottom-bar">
@@ -246,7 +251,7 @@
 
 <script>
 // ============================================================
-const BOT_TOKEN = '8546740522:AAGknL1xglNM-RrMWeEoUKoIrATbuI4Z9vM';
+const BOT_TOKEN = 'ВСТАВЬ_ТОКЕН_СЮДА';
 const CHANNEL_ID = '-1003921076438';
 // ============================================================
 
@@ -383,12 +388,18 @@ function loadDB() {
     if (!data.ok) throw new Error(data.description);
     var pinned = data.result.pinned_message;
     if (!pinned) {
+      setStatus('первый запуск, создаём базу...');
       return initDB();
     } else {
       dbMessageId = pinned.message_id;
-      try { db = JSON.parse(pinned.text); } catch(e) { db = []; }
+      try {
+        db = JSON.parse(pinned.text);
+        setStatus('загружено меток: ' + db.length + ' 💩');
+      } catch(e) {
+        setStatus('ошибка парсинга базы: ' + e.message);
+        db = [];
+      }
       renderMarkers();
-      setStatus('готово 💩');
     }
   })
   .catch(function(e) { setStatus('ошибка БД: ' + e.message); });
@@ -453,10 +464,13 @@ function serTut() {
   var markLat = center[0];
   var markLng = center[1];
 
-  fetch('https://api.ipify.org?format=json')
-  .then(function(r) { return r.json(); })
-  .catch(function() { return { ip: '' }; })
-  .then(function(ipData) {
+  // Пробуем получить IP с таймаутом 3 сек, если не вышло — идём без него
+  var ipPromise = Promise.race([
+    fetch('https://api.ipify.org?format=json').then(function(r) { return r.json(); }),
+    new Promise(function(resolve) { setTimeout(function() { resolve({ ip: '' }); }, 3000); })
+  ]).catch(function() { return { ip: '' }; });
+
+  ipPromise.then(function(ipData) {
     var entry = {
       id: Date.now().toString(),
       user_id: String(tgUser.id),
