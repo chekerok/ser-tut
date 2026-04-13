@@ -201,7 +201,7 @@
 // ============================================================
 // КОНФИГ — только токен бота, никаких внешних API ключей!
 // ============================================================
-const BOT_TOKEN = '8546740522:AAGknL1xglNM-RrMWeEoUKoIrATbuI4Z9vM';
+const BOT_TOKEN = 'ВСТАВЬ_ТОКЕН_СЮДА';
 const CHANNEL_ID = '-1003921076438';
 // ============================================================
 
@@ -366,14 +366,13 @@ function addMarker(entry, animate = false) {
       ${isOwn ? `<button class="popup-delete" onclick="deleteMarker('${id}', this)">🗑 Удалить</button>` : ''}
     </div></div>`,
   }, {
-    iconLayout: 'default#imageWithContent',
-    iconImageHref: '',
-    iconImageSize: [32, 32],
-    iconImageOffset: [-16, -32],
-    iconContentOffset: [-16, -70],
-    iconContentLayout: ymaps.templateLayoutFactory.createClass(
-      `<div class="marker-label">${label}</div><div class="${animClass}" style="font-size:28px;line-height:1;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.5));transform-origin:bottom center">💩</div>`
+    iconLayout: ymaps.templateLayoutFactory.createClass(
+      `<div style="position:relative;display:inline-block;transform:translate(-50%,-100%)">
+        <div class="marker-label">${label}</div>
+        <div class="${animClass}" style="font-size:32px;line-height:1;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.5));transform-origin:bottom center;text-align:center">💩</div>
+      </div>`
     ),
+    iconShape: { type: 'Rectangle', coordinates: [[-16, -48], [16, 0]] },
   });
 
   map.geoObjects.add(placemark);
