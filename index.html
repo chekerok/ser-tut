@@ -201,7 +201,7 @@
 // ============================================================
 // КОНФИГ — только токен бота, никаких внешних API ключей!
 // ============================================================
-const BOT_TOKEN = '8546740522:AAGknL1xglNM-RrMWeEoUKoIrATbuI4Z9vMА';
+const BOT_TOKEN = 'ВСТАВЬ_ТОКЕН_СЮДА';
 const CHANNEL_ID = '-1003921076438';
 // ============================================================
 
@@ -357,21 +357,29 @@ function addMarker(entry, animate = false) {
   const label = ip ? `@${username}<br><span style="font-size:10px;color:#aaa">${ip}</span>` : `@${username}`;
   const animClass = animate ? 'poop-drop' : '';
 
+  const deleteBtn = isOwn
+    ? '<button class="popup-delete" onclick="deleteMarker('' + id + '', this)">🗑 Удалить</button>'
+    : '';
+  const ipLine = ip ? '<div class="popup-user" style="font-size:11px;color:#aaa">' + ip + '</div>' : '';
+  const balloonHtml = '<div class="popup-balloon"><div class="popup-inner">'
+    + '<div class="popup-title">💩 Сёр тут</div>'
+    + '<div class="popup-user">@' + username + '</div>'
+    + ipLine
+    + '<div class="popup-time">' + date + '</div>'
+    + deleteBtn
+    + '</div></div>';
+
+  const iconHtml = '<div style="position:relative;display:inline-block;transform:translate(-50%,-100%)">'
+    + '<div class="marker-label">' + label + '</div>'
+    + '<div class="' + animClass + '" style="font-size:32px;line-height:1;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.5));transform-origin:bottom center;text-align:center">💩</div>'
+    + '</div>';
+
+  const IconLayout = ymaps.templateLayoutFactory.createClass(iconHtml);
+
   const placemark = new ymaps.Placemark([lat, lng], {
-    balloonContent: `<div class="popup-balloon"><div class="popup-inner">
-      <div class="popup-title">💩 Сёр тут</div>
-      <div class="popup-user">@${username}</div>
-      ${ip ? `<div class="popup-user" style="font-size:11px;color:#aaa">${ip}</div>` : ''}
-      <div class="popup-time">${date}</div>
-      ${isOwn ? `<button class="popup-delete" onclick="deleteMarker('${id}', this)">🗑 Удалить</button>` : ''}
-    </div></div>`,
+    balloonContent: balloonHtml,
   }, {
-    iconLayout: ymaps.templateLayoutFactory.createClass(
-      `<div style="position:relative;display:inline-block;transform:translate(-50%,-100%)">
-        <div class="marker-label">${label}</div>
-        <div class="${animClass}" style="font-size:32px;line-height:1;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.5));transform-origin:bottom center;text-align:center">💩</div>
-      </div>`
-    ),
+    iconLayout: IconLayout,
     iconShape: { type: 'Rectangle', coordinates: [[-16, -48], [16, 0]] },
   });
 
