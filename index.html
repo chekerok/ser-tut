@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Сёр Тут</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-<script src="https://api-maps.yandex.ru/2.1/?apikey=e2cf8129-ff43-4729-b542-1591d12b5fef&lang=ru_RU" type="text/javascript"></script>
+<script src="https://api-maps.yandex.ru/2.1/?apikey=e2cf8129-ff43-4729-b542-1591d12b5fef&lang=ru_RU"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Russo+One&family=Inter:wght@400;600&display=swap');
 
@@ -22,115 +22,67 @@
   }
 
   #gate {
-    position: fixed;
-    inset: 0;
+    position: fixed; inset: 0;
     background: #1a1a2e;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-    gap: 16px;
-    padding: 32px;
-    text-align: center;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    z-index: 9999; gap: 16px; padding: 32px; text-align: center;
   }
   #gate .emoji { font-size: 64px; }
   #gate h1 { font-family: 'Russo One', sans-serif; font-size: 28px; color: #f5c542; }
   #gate p { color: #aaa; font-size: 15px; line-height: 1.5; }
   #gate a {
-    margin-top: 8px;
-    background: #0088cc;
-    color: #fff;
-    padding: 12px 28px;
-    border-radius: 12px;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 16px;
+    margin-top: 8px; background: #0088cc; color: #fff;
+    padding: 12px 28px; border-radius: 12px;
+    text-decoration: none; font-weight: 600; font-size: 16px;
   }
 
   #header {
-    background: #16213e;
-    padding: 12px 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 2px solid #f5c542;
-    z-index: 100;
-    flex-shrink: 0;
+    background: #16213e; padding: 12px 16px;
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 2px solid #f5c542; z-index: 100; flex-shrink: 0;
   }
-  #header h1 { font-family: 'Russo One', sans-serif; font-size: 20px; color: #f5c542; letter-spacing: 1px; }
+  #header h1 { font-family: 'Russo One', sans-serif; font-size: 20px; color: #f5c542; }
   #user-badge { background: #0f3460; border-radius: 20px; padding: 6px 12px; font-size: 13px; color: #ccc; }
+
+  #status {
+    text-align: center; font-size: 12px; color: #888;
+    padding: 4px 0 2px; flex-shrink: 0; background: #16213e;
+  }
 
   #map { flex: 1; width: 100%; }
 
   #bottom-bar {
-    background: #16213e;
-    padding: 12px 16px;
+    background: #16213e; padding: 12px 16px;
     border-top: 2px solid #f5c542;
-    display: flex;
-    gap: 10px;
-    flex-shrink: 0;
-    z-index: 100;
+    display: flex; gap: 10px; flex-shrink: 0; z-index: 100;
   }
-
   #btn-ser {
-    flex: 1;
-    background: #f5c542;
-    color: #1a1a2e;
-    border: none;
-    border-radius: 12px;
-    padding: 14px;
-    font-family: 'Russo One', sans-serif;
-    font-size: 18px;
-    cursor: pointer;
-    transition: transform 0.1s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
+    flex: 1; background: #f5c542; color: #1a1a2e;
+    border: none; border-radius: 12px; padding: 14px;
+    font-family: 'Russo One', sans-serif; font-size: 18px;
+    cursor: pointer; transition: transform 0.1s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
   }
   #btn-ser:active { transform: scale(0.97); }
   #btn-ser:disabled { background: #555; color: #999; cursor: not-allowed; }
-
   #btn-locate {
-    background: #0f3460;
-    border: 2px solid #f5c542;
-    color: #f5c542;
-    border-radius: 12px;
-    padding: 14px 16px;
-    font-size: 20px;
-    cursor: pointer;
+    background: #0f3460; border: 2px solid #f5c542; color: #f5c542;
+    border-radius: 12px; padding: 14px 16px; font-size: 20px; cursor: pointer;
   }
 
-  #status {
-    text-align: center;
-    font-size: 12px;
-    color: #888;
-    padding: 4px 0 2px;
-    flex-shrink: 0;
-    background: #16213e;
+  .marker-wrap {
+    position: relative;
+    display: inline-block;
+    transform: translate(-50%, -100%);
   }
-
-  .popup-balloon {
-    background: #16213e;
-    border: 2px solid #f5c542;
-    border-radius: 12px;
-    padding: 10px 14px;
-    min-width: 140px;
-    color: #fff;
-    font-family: 'Inter', sans-serif;
-  }
-  .popup-inner { display: flex; flex-direction: column; gap: 6px; }
-  .popup-title { font-family: 'Russo One', sans-serif; font-size: 15px; color: #f5c542; }
-  .popup-user { font-size: 13px; color: #ccc; }
-  .popup-time { font-size: 11px; color: #666; }
   .marker-label {
     position: absolute;
-    bottom: 34px;
+    bottom: 100%;
     left: 50%;
     transform: translateX(-50%);
     white-space: nowrap;
-    background: rgba(22, 33, 62, 0.9);
+    background: rgba(22,33,62,0.92);
     border: 1px solid #f5c542;
     border-radius: 6px;
     padding: 2px 6px;
@@ -139,29 +91,20 @@
     line-height: 1.5;
     text-align: center;
     pointer-events: none;
+    margin-bottom: 2px;
   }
-  .popup-delete {
-    margin-top: 4px;
-    background: #c0392b;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    padding: 6px 12px;
-    font-size: 13px;
-    cursor: pointer;
-  }
+  .marker-icon { font-size: 30px; line-height: 1; display: block; }
 
   @keyframes poopDrop {
-    0%   { transform: translateY(-60px) scaleX(1)   scaleY(1);   opacity: 0; }
-    60%  { transform: translateY(0px)  scaleX(1)   scaleY(1);   opacity: 1; }
-    72%  { transform: translateY(4px)  scaleX(1.35) scaleY(0.6); }
-    84%  { transform: translateY(-6px) scaleX(0.85) scaleY(1.2); }
-    92%  { transform: translateY(2px)  scaleX(1.1)  scaleY(0.9); }
-    100% { transform: translateY(0px)  scaleX(1)   scaleY(1);   opacity: 1; }
+    0%   { transform: translateY(-60px) scaleX(1)    scaleY(1);   opacity: 0; }
+    60%  { transform: translateY(0px)   scaleX(1)    scaleY(1);   opacity: 1; }
+    72%  { transform: translateY(4px)   scaleX(1.35) scaleY(0.6); }
+    84%  { transform: translateY(-6px)  scaleX(0.85) scaleY(1.2); }
+    92%  { transform: translateY(2px)   scaleX(1.1)  scaleY(0.9); }
+    100% { transform: translateY(0px)   scaleX(1)    scaleY(1);   opacity: 1; }
   }
-
   .poop-drop {
-    animation: poopDrop 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation: poopDrop 0.65s cubic-bezier(0.22,1,0.36,1) forwards;
     transform-origin: bottom center;
     display: inline-block;
   }
@@ -173,6 +116,19 @@
     100% { transform: scale(1); }
   }
   .btn-pulse { animation: btnPulse 0.4s ease forwards; }
+
+  .popup-balloon {
+    font-family: 'Inter', sans-serif;
+    min-width: 140px;
+  }
+  .popup-title { font-weight: 700; font-size: 14px; color: #c8860a; margin-bottom: 4px; }
+  .popup-user { font-size: 13px; color: #333; }
+  .popup-time { font-size: 11px; color: #999; margin-top: 2px; }
+  .popup-delete {
+    margin-top: 6px; background: #c0392b; color: #fff;
+    border: none; border-radius: 8px; padding: 5px 12px;
+    font-size: 13px; cursor: pointer; width: 100%;
+  }
 </style>
 </head>
 <body>
@@ -188,10 +144,8 @@
   <h1>💩 Сёр Тут</h1>
   <div id="user-badge">загрузка...</div>
 </div>
-
 <div id="status">инициализация...</div>
 <div id="map"></div>
-
 <div id="bottom-bar">
   <button id="btn-locate" onclick="locateMe()">📍</button>
   <button id="btn-ser" onclick="serTut()" disabled>💩 Сёр тут</button>
@@ -199,28 +153,26 @@
 
 <script>
 // ============================================================
-// КОНФИГ — только токен бота, никаких внешних API ключей!
-// ============================================================
-const BOT_TOKEN = '8546740522:AAGknL1xglNM-RrMWeEoUKoIrATbuI4Z9vM';
+const BOT_TOKEN = 'ВСТАВЬ_ТОКЕН_СЮДА';
 const CHANNEL_ID = '-1003921076438';
 // ============================================================
 
-const API = `https://api.telegram.org/bot${BOT_TOKEN}`;
+const API = 'https://api.telegram.org/bot' + BOT_TOKEN;
 
-let tgUser = null;
-let userLat = null;
-let userLng = null;
-let map = null;
-let markers = {};
-let dbMessageId = null; // id закреплённого сообщения — это наша БД
-let db = [];            // массив меток
+var tgUser = null;
+var userLat = null;
+var userLng = null;
+var map = null;
+var markers = {};
+var dbMessageId = null;
+var db = [];
 
-// ------ ИНИЦИАЛИЗАЦИЯ ------
+// ------ СТАРТ ------
 
-window.addEventListener('DOMContentLoaded', async () => {
-  const tg = window.Telegram?.WebApp;
+window.addEventListener('DOMContentLoaded', function() {
+  var tg = window.Telegram && window.Telegram.WebApp;
 
-  if (!tg || !tg.initDataUnsafe?.user) {
+  if (!tg || !tg.initDataUnsafe || !tg.initDataUnsafe.user) {
     document.getElementById('gate').style.display = 'flex';
     document.getElementById('header').style.display = 'none';
     document.getElementById('status').style.display = 'none';
@@ -233,57 +185,33 @@ window.addEventListener('DOMContentLoaded', async () => {
   tgUser = tg.initDataUnsafe.user;
   document.getElementById('user-badge').textContent = '@' + (tgUser.username || tgUser.first_name);
 
-  try {
-    await initMap();
-  } catch(e) {
-    setStatus('ошибка карты: ' + e.message);
-    return;
-  }
-  locateMe();
-  try {
-    await loadDB();
-  } catch(e) {
-    setStatus('ошибка БД: ' + e.message);
-  }
+  setStatus('загружаем карту...');
+
+  ymaps.ready(function() {
+    setStatus('карта готова');
+    map = new ymaps.Map('map', {
+      center: [55.75, 37.61],
+      zoom: 12,
+      controls: ['zoomControl']
+    });
+    locateMe();
+    loadDB();
+  });
 });
 
 // ------ КАРТА ------
 
-function initMap() {
-  setStatus('загружаем карту...');
-  return new Promise((resolve, reject) => {
-    const timeout = setTimeout(() => {
-      reject(new Error('Яндекс карты не загрузились (таймаут 10с)'));
-    }, 10000);
-
-    ymaps.ready(() => {
-      clearTimeout(timeout);
-      try {
-        map = new ymaps.Map('map', {
-          center: [55.75, 37.61],
-          zoom: 12,
-          controls: ['zoomControl'],
-        });
-        setStatus('карта загружена');
-        resolve();
-      } catch(e) {
-        reject(e);
-      }
-    });
-  });
-}
-
 function locateMe() {
   setStatus('определяем геолокацию...');
   navigator.geolocation.getCurrentPosition(
-    pos => {
+    function(pos) {
       userLat = pos.coords.latitude;
       userLng = pos.coords.longitude;
       map.setCenter([userLat, userLng], 16, { duration: 300 });
       document.getElementById('btn-ser').disabled = false;
       setStatus('готово 💩');
     },
-    err => setStatus('ошибка геолокации: ' + err.message),
+    function(err) { setStatus('ошибка геолокации: ' + err.message); },
     { enableHighAccuracy: true }
   );
 }
@@ -292,251 +220,227 @@ function setStatus(msg) {
   document.getElementById('status').textContent = msg;
 }
 
-
-
-// ------ БД: закреплённое сообщение в канале ------
-
-async function loadDB() {
-  setStatus('загружаем метки...');
-  try {
-    const res = await fetch(`${API}/getChat`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chat_id: CHANNEL_ID }),
-    });
-    const data = await res.json();
-    if (!data.ok) throw new Error(data.description);
-
-    const pinned = data.result.pinned_message;
-
-    if (!pinned) {
-      await initDB();
-    } else {
-      dbMessageId = pinned.message_id;
-      try { db = JSON.parse(pinned.text); } catch { db = []; }
-      renderMarkers();
-    }
-
-    setStatus('готово 💩');
-  } catch (e) {
-    console.error(e);
-    setStatus('ошибка: ' + e.message);
-  }
-}
-
-async function initDB() {
-  // Первый запуск — создаём закреплённое сообщение с пустым массивом
-  const res = await fetch(`${API}/sendMessage`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ chat_id: CHANNEL_ID, text: '[]' }),
-  });
-  const data = await res.json();
-  if (!data.ok) throw new Error(data.description);
-
-  dbMessageId = data.result.message_id;
-
-  await fetch(`${API}/pinChatMessage`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      chat_id: CHANNEL_ID,
-      message_id: dbMessageId,
-      disable_notification: true,
-    }),
-  });
-
-  db = [];
-}
-
-async function saveDB() {
-  await fetch(`${API}/editMessageText`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      chat_id: CHANNEL_ID,
-      message_id: dbMessageId,
-      text: JSON.stringify(db),
-    }),
-  });
-}
-
 // ------ МАРКЕРЫ ------
 
-function renderMarkers() {
-  for (const m of Object.values(markers)) map.geoObjects.remove(m);
-  markers = {};
-  for (const entry of db) addMarker(entry);
-}
+function addMarker(entry, animate) {
+  var id = entry.id;
+  var username = entry.username;
+  var ip = entry.ip || '';
+  var lat = entry.lat;
+  var lng = entry.lng;
+  var timestamp = entry.timestamp;
+  var user_id = entry.user_id;
 
-function addMarker(entry, animate = false) {
-  const { id, user_id, username, lat, lng, timestamp, ip } = entry;
-  const date = new Date(timestamp).toLocaleString('ru-RU');
-  const isOwn = String(user_id) === String(tgUser?.id);
+  var date = new Date(parseInt(timestamp)).toLocaleString('ru-RU');
+  var isOwn = String(user_id) === String(tgUser && tgUser.id);
+  var animClass = animate ? 'poop-drop' : '';
 
-  const label = ip ? `@${username}<br><span style="font-size:10px;color:#aaa">${ip}</span>` : `@${username}`;
-  const animClass = animate ? 'poop-drop' : '';
+  var labelHtml = ip
+    ? '@' + username + '<br><span style="font-size:9px;color:#aac">' + ip + '</span>'
+    : '@' + username;
 
-  const deleteBtn = isOwn
-    ? '<button class="popup-delete" onclick="deleteMarker('' + id + '', this)">🗑 Удалить</button>'
+  var IconLayout = ymaps.templateLayoutFactory.createClass(
+    '<div class="marker-wrap">' +
+      '<div class="marker-label">' + labelHtml + '</div>' +
+      '<span class="marker-icon ' + animClass + '">💩</span>' +
+    '</div>'
+  );
+
+  var deleteHtml = isOwn
+    ? '<button class="popup-delete" onclick="deleteMarker(\'' + id + '\', this)">🗑 Удалить</button>'
     : '';
-  const ipLine = ip ? '<div class="popup-user" style="font-size:11px;color:#aaa">' + ip + '</div>' : '';
-  const balloonHtml = '<div class="popup-balloon"><div class="popup-inner">'
-    + '<div class="popup-title">💩 Сёр тут</div>'
-    + '<div class="popup-user">@' + username + '</div>'
-    + ipLine
-    + '<div class="popup-time">' + date + '</div>'
-    + deleteBtn
-    + '</div></div>';
+  var ipHtml = ip ? '<div class="popup-user" style="font-size:11px;color:#aaa">' + ip + '</div>' : '';
 
-  const iconHtml = '<div style="position:relative;display:inline-block;transform:translate(-50%,-100%)">'
-    + '<div class="marker-label">' + label + '</div>'
-    + '<div class="' + animClass + '" style="font-size:32px;line-height:1;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.5));transform-origin:bottom center;text-align:center">💩</div>'
-    + '</div>';
-
-  const IconLayout = ymaps.templateLayoutFactory.createClass(iconHtml);
-
-  const placemark = new ymaps.Placemark([lat, lng], {
-    balloonContent: balloonHtml,
+  var placemark = new ymaps.Placemark([lat, lng], {
+    balloonContent:
+      '<div class="popup-balloon">' +
+        '<div class="popup-title">💩 Сёр тут</div>' +
+        '<div class="popup-user">@' + username + '</div>' +
+        ipHtml +
+        '<div class="popup-time">' + date + '</div>' +
+        deleteHtml +
+      '</div>'
   }, {
     iconLayout: IconLayout,
-    iconShape: { type: 'Rectangle', coordinates: [[-16, -48], [16, 0]] },
+    iconShape: { type: 'Rectangle', coordinates: [[-16, -52], [16, 0]] }
   });
 
   map.geoObjects.add(placemark);
   markers[id] = placemark;
 }
 
-// ------ ЗВУК ------
-
-function playPoopSound() {
-  try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-
-    // Низкий "бульк"
-    const osc1 = ctx.createOscillator();
-    const gain1 = ctx.createGain();
-    osc1.connect(gain1); gain1.connect(ctx.destination);
-    osc1.type = 'sine';
-    osc1.frequency.setValueAtTime(180, ctx.currentTime);
-    osc1.frequency.exponentialRampToValueAtTime(60, ctx.currentTime + 0.18);
-    gain1.gain.setValueAtTime(0.55, ctx.currentTime);
-    gain1.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.22);
-    osc1.start(ctx.currentTime);
-    osc1.stop(ctx.currentTime + 0.22);
-
-    // Шлепок
-    const bufSize = ctx.sampleRate * 0.08;
-    const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
-    const data = buf.getChannelData(0);
-    for (let i = 0; i < bufSize; i++) data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bufSize, 3);
-    const noise = ctx.createBufferSource();
-    noise.buffer = buf;
-    const gainN = ctx.createGain();
-    gainN.gain.setValueAtTime(0.35, ctx.currentTime + 0.05);
-    gainN.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.13);
-    noise.connect(gainN); gainN.connect(ctx.destination);
-    noise.start(ctx.currentTime + 0.05);
-
-    // Высокий "пип" для комизма
-    const osc2 = ctx.createOscillator();
-    const gain2 = ctx.createGain();
-    osc2.connect(gain2); gain2.connect(ctx.destination);
-    osc2.type = 'sine';
-    osc2.frequency.setValueAtTime(520, ctx.currentTime + 0.15);
-    osc2.frequency.exponentialRampToValueAtTime(280, ctx.currentTime + 0.32);
-    gain2.gain.setValueAtTime(0.18, ctx.currentTime + 0.15);
-    gain2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
-    osc2.start(ctx.currentTime + 0.15);
-    osc2.stop(ctx.currentTime + 0.35);
-
-  } catch(e) { /* тихий фейл если аудио заблокировано */ }
+function renderMarkers() {
+  for (var key in markers) map.geoObjects.remove(markers[key]);
+  markers = {};
+  for (var i = 0; i < db.length; i++) addMarker(db[i], false);
 }
 
-// ------ АНИМАЦИЯ КНОПКИ ------
+// ------ БД ------
 
-function animateBtn() {
-  const btn = document.getElementById('btn-ser');
-  btn.classList.remove('btn-pulse');
-  void btn.offsetWidth; // reflow
-  btn.classList.add('btn-pulse');
-  setTimeout(() => btn.classList.remove('btn-pulse'), 400);
+function loadDB() {
+  setStatus('загружаем метки...');
+  fetch(API + '/getChat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ chat_id: CHANNEL_ID })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (!data.ok) throw new Error(data.description);
+    var pinned = data.result.pinned_message;
+    if (!pinned) {
+      return initDB();
+    } else {
+      dbMessageId = pinned.message_id;
+      try { db = JSON.parse(pinned.text); } catch(e) { db = []; }
+      renderMarkers();
+      setStatus('готово 💩');
+    }
+  })
+  .catch(function(e) { setStatus('ошибка БД: ' + e.message); });
+}
+
+function initDB() {
+  return fetch(API + '/sendMessage', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ chat_id: CHANNEL_ID, text: '[]' })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (!data.ok) throw new Error(data.description);
+    dbMessageId = data.result.message_id;
+    return fetch(API + '/pinChatMessage', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: CHANNEL_ID, message_id: dbMessageId, disable_notification: true })
+    });
+  })
+  .then(function() {
+    db = [];
+    setStatus('готово 💩');
+  });
+}
+
+function saveDB() {
+  return fetch(API + '/editMessageText', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ chat_id: CHANNEL_ID, message_id: dbMessageId, text: JSON.stringify(db) })
+  });
 }
 
 // ------ ПОСТАВИТЬ МЕТКУ ------
 
-async function serTut() {
+function serTut() {
   if (!userLat || !userLng) { setStatus('сначала дождись геолокации!'); return; }
-
-  const btn = document.getElementById('btn-ser');
+  var btn = document.getElementById('btn-ser');
   btn.disabled = true;
   setStatus('ставим метку...');
 
-  try {
-    // Получаем IP пользователя
-    let userIp = '';
-    try {
-      const ipRes = await fetch('https://api.ipify.org?format=json');
-      const ipData = await ipRes.json();
-      userIp = ipData.ip;
-    } catch { userIp = ''; }
-
-    const entry = {
+  fetch('https://api.ipify.org?format=json')
+  .then(function(r) { return r.json(); })
+  .catch(function() { return { ip: '' }; })
+  .then(function(ipData) {
+    var entry = {
       id: Date.now().toString(),
       user_id: String(tgUser.id),
       username: tgUser.username || tgUser.first_name,
       lat: userLat,
       lng: userLng,
       timestamp: Date.now(),
-      ip: userIp,
+      ip: ipData.ip || ''
     };
 
-    // Лог-сообщение в канал (для красоты)
-    await fetch(`${API}/sendMessage`, {
+    return fetch(API + '/sendMessage', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         chat_id: CHANNEL_ID,
-        text: `💩 @${entry.username} насёр тут\n📍 ${entry.lat.toFixed(5)}, ${entry.lng.toFixed(5)}`,
-      }),
+        text: '💩 @' + entry.username + ' насёр тут\n📍 ' + entry.lat.toFixed(5) + ', ' + entry.lng.toFixed(5)
+      })
+    })
+    .then(function() {
+      db.push(entry);
+      return saveDB().then(function() {
+        playPoopSound();
+        animateBtn();
+        addMarker(entry, true);
+        setStatus('метка поставлена! 💩');
+        btn.disabled = false;
+      });
     });
-
-    db.push(entry);
-    await saveDB();
-    playPoopSound();
-    animateBtn();
-    addMarker(entry, true);
-    setStatus('метка поставлена! 💩');
-  } catch (e) {
-    console.error(e);
+  })
+  .catch(function(e) {
     setStatus('ошибка: ' + e.message);
-  }
-
-  btn.disabled = false;
+    btn.disabled = false;
+  });
 }
 
 // ------ УДАЛИТЬ МЕТКУ ------
 
-async function deleteMarker(id, btn) {
+function deleteMarker(id, btn) {
   btn.disabled = true;
   btn.textContent = 'удаляем...';
-
-  try {
-    db = db.filter(e => e.id !== id);
-    await saveDB();
-
+  db = db.filter(function(e) { return e.id !== id; });
+  saveDB().then(function() {
     if (markers[id]) {
       map.geoObjects.remove(markers[id]);
       delete markers[id];
     }
-
     setStatus('метка удалена');
-  } catch (e) {
-    console.error(e);
+  }).catch(function(e) {
     btn.disabled = false;
     btn.textContent = '🗑 Удалить';
-    setStatus('ошибка удаления');
-  }
+    setStatus('ошибка: ' + e.message);
+  });
+}
+
+// ------ ЗВУК ------
+
+function playPoopSound() {
+  try {
+    var ctx = new (window.AudioContext || window.webkitAudioContext)();
+    var osc1 = ctx.createOscillator();
+    var gain1 = ctx.createGain();
+    osc1.connect(gain1); gain1.connect(ctx.destination);
+    osc1.type = 'sine';
+    osc1.frequency.setValueAtTime(180, ctx.currentTime);
+    osc1.frequency.exponentialRampToValueAtTime(60, ctx.currentTime + 0.18);
+    gain1.gain.setValueAtTime(0.55, ctx.currentTime);
+    gain1.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.22);
+    osc1.start(); osc1.stop(ctx.currentTime + 0.22);
+
+    var bufSize = ctx.sampleRate * 0.08;
+    var buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+    var data = buf.getChannelData(0);
+    for (var i = 0; i < bufSize; i++) data[i] = (Math.random()*2-1) * Math.pow(1 - i/bufSize, 3);
+    var noise = ctx.createBufferSource();
+    noise.buffer = buf;
+    var gainN = ctx.createGain();
+    gainN.gain.setValueAtTime(0.35, ctx.currentTime + 0.05);
+    gainN.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.13);
+    noise.connect(gainN); gainN.connect(ctx.destination);
+    noise.start(ctx.currentTime + 0.05);
+
+    var osc2 = ctx.createOscillator();
+    var gain2 = ctx.createGain();
+    osc2.connect(gain2); gain2.connect(ctx.destination);
+    osc2.type = 'sine';
+    osc2.frequency.setValueAtTime(520, ctx.currentTime + 0.15);
+    osc2.frequency.exponentialRampToValueAtTime(280, ctx.currentTime + 0.32);
+    gain2.gain.setValueAtTime(0.18, ctx.currentTime + 0.15);
+    gain2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
+    osc2.start(ctx.currentTime + 0.15); osc2.stop(ctx.currentTime + 0.35);
+  } catch(e) {}
+}
+
+function animateBtn() {
+  var btn = document.getElementById('btn-ser');
+  btn.classList.remove('btn-pulse');
+  void btn.offsetWidth;
+  btn.classList.add('btn-pulse');
+  setTimeout(function() { btn.classList.remove('btn-pulse'); }, 400);
 }
 </script>
 </body>
