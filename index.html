@@ -248,7 +248,7 @@
 
 <script>
 // ============================================================
-const BOT_TOKEN = '8546740522:AAGknL1xglNM-RrMWeEoUKoIrATbuI4Z9vM';
+const BOT_TOKEN = 'ВСТАВЬ_ТОКЕН_СЮДА';
 const CHANNEL_ID = '-1003921076438';
 // ============================================================
 
@@ -261,6 +261,7 @@ var map = null;
 var markers = {};
 var dbMessageId = null;
 var db = [];
+var isAiming = false; // режим прицеливания
 
 // ------ СТАРТ ------
 
@@ -304,7 +305,6 @@ function locateMe() {
       userLng = pos.coords.longitude;
       map.setCenter([userLat, userLng], 16, { duration: 300 });
       document.getElementById('btn-ser').disabled = false;
-      document.getElementById('user-cursor').classList.add('active');
       setStatus('готово 💩');
     },
     function(err) { setStatus('ошибка геолокации: ' + err.message); },
