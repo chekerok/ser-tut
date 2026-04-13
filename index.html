@@ -141,12 +141,12 @@
 
   /* ---- КУРСОР ПОЛЬЗОВАТЕЛЯ ---- */
   #user-cursor {
-    position: absolute;
+    position: fixed;
     pointer-events: none;
-    z-index: 500;
+    z-index: 9000;
     left: 50%;
-    top: 60px;
-    transform: translateX(-50%);
+    top: 50%;
+    transform: translate(-50%, -100%);
     display: none;
   }
   #user-cursor svg {
@@ -224,14 +224,12 @@
   <div id="user-badge">загрузка...</div>
 </div>
 <div id="status">инициализация...</div>
-<div style="position:relative;flex:1;display:flex;flex-direction:column;">
-  <div id="map" style="flex:1;width:100%"></div>
-  <div id="user-cursor">
-    <svg width="24" height="60" viewBox="0 0 24 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <line x1="12" y1="0" x2="12" y2="44" stroke="#e53e3e" stroke-width="4" stroke-linecap="round"/>
-      <polyline points="2,34 12,54 22,34" stroke="#e53e3e" stroke-width="4" stroke-linejoin="round" stroke-linecap="round" fill="none"/>
-    </svg>
-  </div>
+<div id="map"></div>
+<div id="user-cursor">
+  <svg width="24" height="60" viewBox="0 0 24 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <line x1="12" y1="0" x2="12" y2="44" stroke="#e53e3e" stroke-width="4" stroke-linecap="round"/>
+    <polyline points="2,34 12,54 22,34" stroke="#e53e3e" stroke-width="4" stroke-linejoin="round" stroke-linecap="round" fill="none"/>
+  </svg>
 </div>
 <div id="bottom-bar">
   <button id="btn-locate" onclick="locateMe()">
@@ -248,7 +246,7 @@
 
 <script>
 // ============================================================
-const BOT_TOKEN = '8546740522:AAGknL1xglNM-RrMWeEoUKoIrATbuI4Z9vM';
+const BOT_TOKEN = 'ВСТАВЬ_ТОКЕН_СЮДА';
 const CHANNEL_ID = '-1003921076438';
 // ============================================================
 
