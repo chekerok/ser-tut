@@ -248,7 +248,7 @@
 
 <script>
 // ============================================================
-const BOT_TOKEN = '8546740522:AAGknL1xglNM-RrMWeEoUKoIrATbuI4Z9vM';
+const BOT_TOKEN = 'ВСТАВЬ_ТОКЕН_СЮДА';
 const CHANNEL_ID = '-1003921076438';
 // ============================================================
 
@@ -475,8 +475,7 @@ function serTut() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         chat_id: CHANNEL_ID,
-        text: '💩 @' + entry.username + ' насёр тут
-📍 ' + entry.lat.toFixed(5) + ', ' + entry.lng.toFixed(5)
+        text: '\u{1F4A9} @' + entry.username + ' \u043D\u0430\u0441\u0451\u0440 \u0442\u0443\u0442\n\u{1F4CD} ' + entry.lat.toFixed(5) + ', ' + entry.lng.toFixed(5)
       })
     })
     .then(function() {
