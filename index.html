@@ -13,7 +13,7 @@
 
   body {
     font-family: 'Inter', sans-serif;
-    background: #1a1a2e;
+    background: #1c1c1c;
     color: #fff;
     height: 100dvh;
     display: flex;
@@ -21,56 +21,100 @@
     overflow: hidden;
   }
 
+  /* ---- ЗАГЛУШКА ---- */
   #gate {
-    position: fixed; inset: 0;
-    background: #1a1a2e;
+    position: fixed; inset: 0; background: #1c1c1c;
     display: flex; flex-direction: column;
     align-items: center; justify-content: center;
     z-index: 9999; gap: 16px; padding: 32px; text-align: center;
   }
   #gate .emoji { font-size: 64px; }
-  #gate h1 { font-family: 'Russo One', sans-serif; font-size: 28px; color: #f5c542; }
+  #gate h1 { font-family: 'Russo One', sans-serif; font-size: 28px; color: #fff; }
   #gate p { color: #aaa; font-size: 15px; line-height: 1.5; }
   #gate a {
-    margin-top: 8px; background: #0088cc; color: #fff;
-    padding: 12px 28px; border-radius: 12px;
+    margin-top: 8px; background: #3a3a3a; color: #fff;
+    padding: 12px 28px; border-radius: 50px;
     text-decoration: none; font-weight: 600; font-size: 16px;
   }
 
+  /* ---- ХЕДЕР ---- */
   #header {
-    background: #16213e; padding: 12px 16px;
+    background: #1c1c1c;
+    padding: 12px 20px;
     display: flex; align-items: center; justify-content: space-between;
-    border-bottom: 2px solid #f5c542; z-index: 100; flex-shrink: 0;
+    flex-shrink: 0;
+    z-index: 100;
   }
-  #header h1 { font-family: 'Russo One', sans-serif; font-size: 20px; color: #f5c542; }
-  #user-badge { background: #0f3460; border-radius: 20px; padding: 6px 12px; font-size: 13px; color: #ccc; }
+  #header-left {
+    display: flex; align-items: center; gap: 8px;
+  }
+  #header h1 {
+    font-family: 'Russo One', sans-serif;
+    font-size: 18px;
+    color: #fff;
+    letter-spacing: 1px;
+    text-transform: lowercase;
+  }
+  #user-badge {
+    font-size: 13px;
+    color: #aaa;
+    font-family: 'Inter', sans-serif;
+  }
 
+  /* ---- СТАТУС ---- */
   #status {
-    text-align: center; font-size: 12px; color: #888;
-    padding: 4px 0 2px; flex-shrink: 0; background: #16213e;
+    text-align: center;
+    font-size: 12px;
+    color: #f5c542;
+    padding: 4px 0;
+    flex-shrink: 0;
+    background: #1c1c1c;
+    font-family: 'Inter', sans-serif;
   }
 
+  /* ---- КАРТА ---- */
   #map { flex: 1; width: 100%; }
 
+  /* ---- НИЖНЯЯ ПАНЕЛЬ ---- */
   #bottom-bar {
-    background: #16213e; padding: 12px 16px;
-    border-top: 2px solid #f5c542;
-    display: flex; gap: 10px; flex-shrink: 0; z-index: 100;
+    background: #1c1c1c;
+    padding: 14px 16px 20px;
+    display: flex; gap: 12px;
+    flex-shrink: 0; z-index: 100;
+    align-items: center;
   }
-  #btn-ser {
-    flex: 1; background: #f5c542; color: #1a1a2e;
-    border: none; border-radius: 12px; padding: 14px;
-    font-family: 'Russo One', sans-serif; font-size: 18px;
-    cursor: pointer; transition: transform 0.1s;
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-  }
-  #btn-ser:active { transform: scale(0.97); }
-  #btn-ser:disabled { background: #555; color: #999; cursor: not-allowed; }
   #btn-locate {
-    background: #0f3460; border: 2px solid #f5c542; color: #f5c542;
-    border-radius: 12px; padding: 14px 16px; font-size: 20px; cursor: pointer;
+    width: 60px; height: 60px;
+    background: #2e2e2e;
+    border: none;
+    border-radius: 50%;
+    color: #fff;
+    font-size: 22px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.15s;
   }
+  #btn-locate:active { background: #444; }
 
+  #btn-ser {
+    flex: 1;
+    height: 60px;
+    background: #2e2e2e;
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    font-family: 'Russo One', sans-serif;
+    font-size: 18px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    transition: background 0.15s;
+  }
+  #btn-ser:active { background: #444; }
+  #btn-ser:disabled { background: #2a2a2a; color: #555; cursor: not-allowed; }
+
+  /* ---- МАРКЕР ---- */
   .marker-wrap {
     position: relative;
     display: inline-block;
@@ -82,33 +126,57 @@
     left: 50%;
     transform: translateX(-50%);
     white-space: nowrap;
-    background: rgba(22,33,62,0.92);
-    border: 1px solid #f5c542;
+    background: rgba(28,28,28,0.92);
+    border: 1px solid rgba(255,255,255,0.2);
     border-radius: 6px;
-    padding: 2px 6px;
+    padding: 2px 7px;
     font-size: 10px;
-    color: #f5c542;
+    color: #fff;
     line-height: 1.5;
     text-align: center;
     pointer-events: none;
-    margin-bottom: 2px;
+    margin-bottom: 3px;
   }
   .marker-icon { font-size: 30px; line-height: 1; display: block; }
 
-  @keyframes poopDrop {
-    0%   { transform: translateY(-60px) scaleX(1)    scaleY(1);   opacity: 0; }
-    60%  { transform: translateY(0px)   scaleX(1)    scaleY(1);   opacity: 1; }
-    72%  { transform: translateY(4px)   scaleX(1.35) scaleY(0.6); }
-    84%  { transform: translateY(-6px)  scaleX(0.85) scaleY(1.2); }
-    92%  { transform: translateY(2px)   scaleX(1.1)  scaleY(0.9); }
-    100% { transform: translateY(0px)   scaleX(1)    scaleY(1);   opacity: 1; }
+  /* ---- КУРСОР ПОЛЬЗОВАТЕЛЯ ---- */
+  #user-cursor {
+    position: absolute;
+    pointer-events: none;
+    z-index: 500;
+    left: 50%;
+    top: 60px;
+    transform: translateX(-50%);
+    display: none;
+  }
+  #user-cursor svg {
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
+  }
+
+  @keyframes cursorBounce {
+    0%   { transform: translateX(-50%) translateY(0px); }
+    50%  { transform: translateX(-50%) translateY(14px); }
+    100% { transform: translateX(-50%) translateY(0px); }
+  }
+  #user-cursor.active {
+    display: block;
+    animation: cursorBounce 1.8s ease-in-out infinite;
+  }
+
+  /* ---- АНИМАЦИИ ---- */
+  @keyframes poopGrow {
+    0%   { transform: scaleX(1)    scaleY(0);   opacity: 0; }
+    55%  { transform: scaleX(1)    scaleY(1);   opacity: 1; }
+    68%  { transform: scaleX(1.35) scaleY(0.62); }
+    80%  { transform: scaleX(0.85) scaleY(1.2); }
+    90%  { transform: scaleX(1.1)  scaleY(0.9); }
+    100% { transform: scaleX(1)    scaleY(1);   opacity: 1; }
   }
   .poop-drop {
-    animation: poopDrop 0.65s cubic-bezier(0.22,1,0.36,1) forwards;
+    animation: poopGrow 0.75s cubic-bezier(0.22,1,0.36,1) forwards;
     transform-origin: bottom center;
     display: inline-block;
   }
-
   @keyframes btnPulse {
     0%   { transform: scale(1); }
     40%  { transform: scale(0.93); }
@@ -117,15 +185,23 @@
   }
   .btn-pulse { animation: btnPulse 0.4s ease forwards; }
 
-  .popup-balloon {
-    font-family: 'Inter', sans-serif;
-    min-width: 140px;
-  }
+  /* ---- ПОПАП ---- */
+  .popup-balloon { font-family: 'Inter', sans-serif; min-width: 150px; }
   .popup-title { font-weight: 700; font-size: 14px; color: #c8860a; margin-bottom: 4px; }
   .popup-user { font-size: 13px; color: #333; }
   .popup-time { font-size: 11px; color: #999; margin-top: 2px; }
+  .popup-like {
+    margin-top: 6px;
+    background: #f0f0f0;
+    border: none; border-radius: 8px; padding: 5px 12px;
+    font-size: 13px; cursor: pointer; width: 100%;
+    display: flex; align-items: center; justify-content: center; gap: 5px;
+    transition: background 0.15s;
+  }
+  .popup-like:active { background: #ddd; }
+  .popup-like.liked { background: #ffe0e0; }
   .popup-delete {
-    margin-top: 6px; background: #c0392b; color: #fff;
+    margin-top: 5px; background: #c0392b; color: #fff;
     border: none; border-radius: 8px; padding: 5px 12px;
     font-size: 13px; cursor: pointer; width: 100%;
   }
@@ -141,19 +217,38 @@
 </div>
 
 <div id="header">
-  <h1>💩 Сёр Тут</h1>
+  <div id="header-left">
+    <span style="font-size:22px">💩</span>
+    <h1>сёртут</h1>
+  </div>
   <div id="user-badge">загрузка...</div>
 </div>
 <div id="status">инициализация...</div>
-<div id="map"></div>
+<div style="position:relative;flex:1;display:flex;flex-direction:column;">
+  <div id="map" style="flex:1;width:100%"></div>
+  <div id="user-cursor">
+    <svg width="24" height="60" viewBox="0 0 24 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <line x1="12" y1="0" x2="12" y2="44" stroke="#e53e3e" stroke-width="4" stroke-linecap="round"/>
+      <polyline points="2,34 12,54 22,34" stroke="#e53e3e" stroke-width="4" stroke-linejoin="round" stroke-linecap="round" fill="none"/>
+    </svg>
+  </div>
+</div>
 <div id="bottom-bar">
-  <button id="btn-locate" onclick="locateMe()">📍</button>
-  <button id="btn-ser" onclick="serTut()" disabled>💩 Сёр тут</button>
+  <button id="btn-locate" onclick="locateMe()">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="3"/>
+      <line x1="12" y1="2" x2="12" y2="6"/>
+      <line x1="12" y1="18" x2="12" y2="22"/>
+      <line x1="2" y1="12" x2="6" y2="12"/>
+      <line x1="18" y1="12" x2="22" y2="12"/>
+    </svg>
+  </button>
+  <button id="btn-ser" onclick="serTut()" disabled>СЁР ТУТ 💩</button>
 </div>
 
 <script>
 // ============================================================
-const BOT_TOKEN = '8546740522:AAGknL1xglNM-RrMWeEoUKoIrATbuI4Z9vM';
+const BOT_TOKEN = 'ВСТАВЬ_ТОКЕН_СЮДА';
 const CHANNEL_ID = '-1003921076438';
 // ============================================================
 
@@ -209,6 +304,7 @@ function locateMe() {
       userLng = pos.coords.longitude;
       map.setCenter([userLat, userLng], 16, { duration: 300 });
       document.getElementById('btn-ser').disabled = false;
+      document.getElementById('user-cursor').classList.add('active');
       setStatus('готово 💩');
     },
     function(err) { setStatus('ошибка геолокации: ' + err.message); },
@@ -349,7 +445,8 @@ function serTut() {
       lat: userLat,
       lng: userLng,
       timestamp: Date.now(),
-      ip: ipData.ip || ''
+      ip: ipData.ip || '',
+      likes: []
     };
 
     return fetch(API + '/sendMessage', {
@@ -372,6 +469,40 @@ function serTut() {
     });
   })
   .catch(function(e) {
+    setStatus('ошибка: ' + e.message);
+    btn.disabled = false;
+  });
+}
+
+// ------ ЛАЙК ------
+
+function toggleLike(id, btn) {
+  var myId = String(tgUser && tgUser.id);
+  var entry = null;
+  for (var i = 0; i < db.length; i++) {
+    if (db[i].id === id) { entry = db[i]; break; }
+  }
+  if (!entry) return;
+
+  if (!entry.likes) entry.likes = [];
+  var idx = entry.likes.indexOf(myId);
+  if (idx === -1) {
+    entry.likes.push(myId);
+  } else {
+    entry.likes.splice(idx, 1);
+  }
+
+  btn.disabled = true;
+  saveDB().then(function() {
+    // Перерисовываем маркер
+    if (markers[id]) {
+      map.geoObjects.remove(markers[id]);
+      delete markers[id];
+    }
+    addMarker(entry, false);
+    // Открываем балун снова
+    if (markers[id]) markers[id].balloon.open();
+  }).catch(function(e) {
     setStatus('ошибка: ' + e.message);
     btn.disabled = false;
   });
